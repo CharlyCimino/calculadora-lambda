@@ -1,0 +1,75 @@
+
+@font-face { 
+    font-family: cm; 
+    src: url(resources/fonts/cmu/cmunrm.ttf);
+    font-style: normal;
+}
+
+@font-face {
+    font-family: cm; 
+    src: url(resources/fonts/cmu/cmunti.ttf);
+    font-style: italic;
+}
+
+body {
+    font-family: cm;
+    font-size: 15pt;
+    background: #efefef;
+}
+
+h2 {
+    font-weight: normal;
+    font-size: 27pt;
+}
+
+h4 {
+    font-weight: normal;
+    font-size: 17pt;
+    font-style: italic;
+}
+
+::selection {
+    background: black;
+    color: white;
+}
+
+.butt {
+    background: #e8e8e8;
+    border: 1px solid #a7a7a7;
+    border-radius: 4px;
+    padding: 1px 4px;
+}
+
+#content {
+    position: relative;
+    left: 300px;
+    text-align: justify;
+    width: 50vw;
+    padding-bottom: 300px;
+}
+
+.intext {
+    text-decoration: underline;
+    text-decoration-color: #adadad;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+#navigation {
+    position: fixed;
+    left: 50px;
+    top: 50px;
+}
+
+.navElement {
+    display: block;
+    font-size: 18pt;
+    text-align: right;
+}

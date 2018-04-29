@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Lambda</title>
+        <meta charset="utf-8">
+        <link rel='stylesheet' type='text/css' href='style.css'>
+        <link rel='stylesheet' type='text/css' href='print.css' media='print'>
+        <link rel='icon' type='image/png' href='resources/favicon.png'>
+    
+        <script src='src/Term.js'></script>
+        <script src='src/Type.js'></script>
+        <script src='src/Environment.js'></script>
+        <script src='src/Derivation.js'></script>
+        <script src='src/parser.js'></script>
+        <script src='src/evaluator.js'></script>
+        <script src='src/localAliases.js'></script>
+        <script src='src/main.js'></script>
+        <script src='src/Parser.js'></script>
+
+        <style>
+            .demo {
+                box-shadow: 0 0 10px;
+                position: absolute;
+                right: 0;
+                bottom: 10%;
+                font-family: monospace;
+                color:rgba(0,0,0,0);
+                font-size: 18pt;
+            }
+            .demo:hover{ background-color:grey; color: black;}
+            .hideDemo { color: #ffd7d7; font-family: monospace;}
+        </style>
+
+    </head>
+
+    <body onload='prepare()'>
+        <noscript><span id='noscr'>This app needs javascript.</span></noscript>
+
+        <div id='welcomeFrame'>
+            <div id='inputPanel'>
+                <div id='parserTypeSystem'>
+                    <span><em>Type system:</em></span>
+                    <span class='option' onclick='disciplineClick("UNTYPED")' id='untypedTag'>Untyped</span> |
+                    <span class='option' onclick='disciplineClick("SIMPLY_TYPED")' id='simplyTag'>Simply typed</span> |
+                    <span class='option' onclick='disciplineClick("HINDLEY_MILNER")' id='hindleyTag'>Hindley-Milner</span>
+                </div>
+                <div>
+                    <input spellcheck='false' id='parserInputBox' type='text' oninput='slashToLambdaWelcome(this)'>
+                    <div id='submitButton'><span class='option' onclick='submit()'>Submit</span></div>
+                </div>
+                <div><span class='option' onclick='toggleSetting("preferConstants")'>prefer constants over aliases: <em><span id='preferAliasFrame'>hard to say</span></em></span></div>
+                <div id='leads'>
+                    <div>To enter lambda, type backslash <kbd>\</kbd>.</div>
+                    <div>To enter arrow, type hyphen-minus and greater-than sign <kbd>-</kbd><kbd>&gt;</kbd>.</div>
+                </div>
+            </div>
+            <div id='welcomeOptions'>
+                <div id='initialMenuOptions'>
+                    <span><a href='help.html#examples'>EXAMPLES</a></span> |
+                    <span><a href='help.html'>HELP</a></span> |
+                    <label for='fileInputBox'><span class='option'>IMPORT DERIVATION FROM A FILE</span></label> |
+                    <label for='fileInputBoxAliases'><span class='option' id='importAliasesButton'>IMPORT ALIASES FROM A FILE</span></label>
+                </div>
+            </div>
+            <div id='initialAboutLabel'><span>Lambda Calculus Evaluator, 2018</span></div>
+        </div>
+
+        <div id='inputOutputFrame'>
+            <input onchange='importFromFileClick()' id='fileInputBox' accept='.lambda' type='file' style='display:none'>
+            <input onchange='importFromFileAliasesClick()' id='fileInputBoxAliases' accept='.lambda' type='file' style='display:none'>
+            <span id='ioHeader'>Import <em>&amp;</em> Export</span>
+            <div id='ioOptions'>
+                <div><span onclick='outputLatexClick()' class='ioButt option'>export <span class='latex'>L<sup>a</sup>T<sub>e</sub>X</span> source</span></div>
+                <div><span onclick='saveFileClick()' class='ioButt option'>save to a file</span></div>
+                <div><span class='ioButt option'>print</span></div>
+                <label for='fileInputBox'><div><span class='ioButt option'>load derivation from a file</span></div></label>
+                <label for='fileInputBoxAliases'><div><span class='ioButt option'>load aliases from a file</span></div></label>
+            </div>
+            <span id='ioClose'><span onclick='cancelAliasClick()' class='option'>Close</span></span>
+        </div>
+
+        <div id='aliasFrame'>
+            <div id='aliasWindow'>
+                <div id='aliasHeader'>Add an alias</div>
+                <div id='lines'>
+                    <input spellcheck='false' oninput='sanitizeAliasName()' placeholder='NAME' type='text' class='lineInput' id='aliasNameInput'> =
+                    <input spellcheck='false' oninput='slashToLambdaAlias(this)' placeholder='λsome.term' type='text' class='lineInput' id='aliasTermInput'>
+                </div>
+                <div id='aliasButtons'>
+                    <span class='option aliasButt'><a href='help.html#aliases_primitives' target='_blank'>Help</a></span>
+                    <span onclick='cancelAliasClick()' class='option aliasButt'>Cancel</span>
+                    <span onclick='acceptNewAliasClick()' class='option aliasButt'>Accept</span>
+                </div>
+                <div class='aliasMessage'>
+                    <span class='option' id='aliasUseCurrent' onclick='aliasUseCurrentClick()'>Use the current term</span>
+                    <span id='aliasError'>Name already used</span>
+                </div>
+            </div>
+        </div>
+
+        <div id='applicationFrame'>
+            <div id='headPanel'>
+                <div id='main' class='menu'>
+                    <span onclick='backToInitialScreen()' class='option'>New/modify term</span> |
+                    <span class='option'><a href='help.html' target='_blank'>Help</a></span> |
+                    <span onclick='optionClick()' class='option'>Options</span> |
+                    <span onclick='strategyClick()' class='option'>Reduction strategy: <span id='strategyFrame'>Who knows...</span></span> |
+                    <span onclick='toggleSetting("expandMacros")' class='option'>Expand aliases: <span id='macroFrame'>Maybe</span></span> |
+                    <span onclick='toggleSetting("dropParens")' class='option'>Shorthand form: <span id='shorthandFrame'>Probably</span></span>
+                </div>
+                <div id='strategyMenu' class='menu'>
+                    <span onclick='setStrategy("FULL_BETA")' class='option'>Full beta reduction</span> |
+                    <span onclick='setStrategy("NORMAL_ORD")' class='option'>Normal order</span> |
+                    <span onclick='setStrategy("CALL_BY_NAME")' class='option'>Call by name</span> |
+                    <span onclick='setStrategy("APPLICATIVE_ORD")' class='option'>Applicative order</span> |
+                    <span onclick='setStrategy("CALL_BY_VALUE")' class='option'>Call by value</span>
+                </div>
+                <div id='settingMenu' class='menu'>
+                    <span onclick='aliasAdditionClick()' class='option'>Add a new alias</span> |
+                    <span onclick='showIoClick()' class='option'>Import/Export</span> |
+                    <span onclick='skiLogic()' class='option'>Convert to SKI combinators</span>
+                </div>
+            </div>
+
+            <div id='mainframe'></div> <!-- the derivation will be rendered inside this div -->
+            <div id='bottomPanel'><span id='infoframe'>Welcome.</span><span id='disciplineFrame'></span></div>
+
+            <div id='DEMO' class='demo' style='display:none'>
+                <div onclick='document.getElementById("DEMO").style.display="none"'>HIDE SECRET MENU</div>
+                <div onclick='reset(lets)'>reset(lets)</div>
+                <div onclick="reset(new Abs(new Var('y'), new Abs(new Var('x'), new App(new Var('y'), (new App(new Var('x'), pri_n(3)))))));Settings.discipline=TypeDiscipline.HINDLEY_MILNER;refresh()">HINDLEY MINDLEY</div>
+                <div onclick="reset(new App(new Abs(new Var('x'), pri_ite(pri_or(pri_eq(new Var('x'), pri_n(4)), pri_eq(new Var('x'), pri_n(3))), pri_div(pri_n(4), pri_n(2)), pri_minus(pri_n(23), pri_n(44)))), pri_n(2)))">INFIX</div>
+                <div onclick="reset(new Abs(new Var('f'), new Let(new Var('x'),new App(new Var('f'), new App(new Var('x'),new Var('x'))) , new App(new Var('x'),new Var('x')),[new Var('x')])))">let to y</div>
+                <div onclick="reset(new Let(new Var('f'), new App(new App(new App(ite, new App(iszero, new Var('x'))), toNumeral(1)), new App(new App(multuntyped, new Var('x')), new App(new Var('f'), new App(pred, new Var('x')))   )), new App(new Var('f'), toNumeral(4)), [new Var('x')], true))">reset(fac4)</div>
+                <div onclick='reset(fib7)'>reset(fib7)</div>
+                <div onclick='reset(pri_fib(11))'>reset(pri_fib11)</div>
+                <div onclick="reset(reset(new Let(new Var('f'), ite, new App(new Var('f'), fals), [], true)))">reset(lets rec)</div>
+                <div onclick='reset(currentNode.term.desugar())'>reset(this.desugar)</div>
+                <div onclick="reset(new App(new Abs(new Var('n'), new Abs(new Var('f'), new Var('n'))), new Var('f')))">chytak</div>
+                <div onclick='reset(reset(new App(new App(YCOMB, G), toNumeral(2))))'>reset(Y FACT 2)</div>
+                <div onclick='reset(w)'>type this</div>
+                <div onclick="reset(new App(new Abs(new Var('a1'), new App(new App(new Var('a1'), pri_false), pri_n(2)), new FunctionType(new BaseType('Bool'), new FunctionType(new BaseType('Int'),new BaseType('Int')))), w))">type this applied</div>
+                <div onclick='reset(smi)'>reset(smi)</div>
+                <div onclick='reset(new App(smi.term1,pri_div(pri_plus(pri_n("1"), pri_n("3")), pri_plus(pri_n(-4), pri_n("4")))))'>reset(fancy schmancy)</div>
+                <div onclick='reset(new App(smi.term1,pri_div(pri_plus(pri_n("1"), ite), pri_plus(pri_n(-4), pri_n("4")))))'>reset(fancy schmancy contd)</div>
+                <div onclick='reset(r)'>reset(r)//  (\x.PLUS 4 x) 2</div>
+                <div onclick='reset(primitivePlus)'>reset(primitivePlus)</div>
+                <div onclick='reset(new App(iszero, toNumeral(3)))'>reset(iszero 3)</div>
+                <div onclick='reset(new App(new App(plusuntyped, toNumeral(4)), toNumeral(12)))'>reset(new App(new App(plus, 4), 12))</div>
+                <div onclick='reset(new App(new App(multuntyped, toNumeral(4)), toNumeral(2)))'>reset(new App(new App(mult, 4), 2))</div>
+                <div onclick='reset(new App(pred, toNumeral(3)))'>reset(new App(pred, 3))</div>
+                <div onclick='Settings.discipline = TypeDiscipline.SIMPLY_TYPED;refresh()'>set simply typed system</div>
+                <div onclick='Settings.discipline = TypeDiscipline.HINDLEY_MILNER;refresh()'>set hindley typed system</div>
+                <div onclick='Settings.infixPrimitives =false;refresh()'>disable INFIX PRIMITIVES</div>
+                <div onclick='Settings.infixPrimitives =true;refresh()'>enable INFIX PRIMITIVES</div>
+                <div onclick='Settings.displayTree = false;refresh()'>Settings.displayTree = false;refresh()</div>
+                <div onclick='Settings.displayTree = true;refresh()'>Settings.displayTree = true;refresh()</div>
+                <div onclick='generatePage(derivationTreeToLatex())'>generatePage(derivationTreeToLatex())</div>
+                <div onclick='window.open("http://www.tlhiv.org/ltxpreview/")'>window.open("http://www.tlhiv.org/ltxpreview/")</div>
+            </div>
+        </div>
+    </body>
+</html>

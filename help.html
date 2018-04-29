@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>λx.Help</title>
+        <meta charset="utf-8">
+        <link rel='stylesheet' type='text/css' href='help_style.css'>
+        <link rel='icon' type='image/png' href='resources/favicon.png'>
+    
+        <script src='src/Term.js'></script>
+        <script src='src/Type.js'></script>
+        <script src='src/Environment.js'></script>
+        <script src='src/Derivation.js'></script>
+        <script src='src/parser.js'></script>
+        <script src='src/evaluator.js'></script>
+        <script src='src/localAliases.js'></script>
+        <script src='src/main.js'></script>
+        <script>
+            function insertMain() {
+                var s = '@';s += 'mail'+'.muni.'+'cz';
+                document.getElementById('main').innerText = 'k'+
+                'a'+'d'+'l'+'e'+'c'+'aj'+s;
+            } 
+        </script>
+    </head>
+
+    <body onload='insertMain()'>
+        <div id='navigation'>
+            <a href='index.html'><span class='navElement'>Back to Evaluator</span></a>
+            <a href='#general_information'><span class='navElement'>General information</span></a>
+            <a href='#term_syntax'><span class='navElement'>Term syntax</span></a>
+            <a href='#reductions'><span class='navElement'>Reductions</span></a>
+            <a href='#aliases_primitives'><span class='navElement'>Aliases <em>&amp;</em> Constants</span></a>
+            <a href='#type_system'><span class='navElement'>Type system</span></a>
+            <a href='#import_export'><span class='navElement'>Import <em>&amp;</em> Export</span></a>
+            <a href='#bottom_panel'><span class='navElement'>Bottom panel</span></a>
+            <a href='#examples'><span class='navElement'>Examples</span></a>
+            <br>
+            <a href='#about'><span class='navElement'>About</span></a>
+        </div>
+        <div id='content'>
+            <h2 id='general_information'>General information</h2>
+            <p>
+            <a class='intext' href='https://en.wikipedia.org/wiki/Lambda_calculus' target='_blank'>Lambda Calculus</a> is a formal system
+            for expressing computation, devised by Alonzo Church in the 1930s. This 
+            client-side javascript-based application is an evaluator thereof.</p>
+            <p>To evaluate some lambda calculus term, type it in the evaluator text box, and, if it is
+            <a class='intext' href='#term_syntax'>syntactically correct</a>, submit it to the evaluator.
+            When entering a&nbsp;term, be sure to have selected the right 
+            <a href='#type_system' class='intext'>type system</a> (<em>untyped</em> is the default),
+            as the parser uses this information to correctly parse the term.
+            Now you can select a&nbsp;particular <a class='intext' href='#reductions'>redex</a> and reduce it
+            by a&nbsp;mouse-click. Redexes will be highlighted on mouse-hover, and with compliance with
+            selected <a href='#reductions' class='intext'>reduction strategy</a>. You can check for
+            total number of reducible expressions down on the
+            <a href='#bottom_panel' class='intext'>bottom panel</a>.
+            After the mouse-click, new, reduced expression will appear below the original.
+            After this point, you can continue in a similar fashion until the term has no remaining redexes.
+            Alternatively, if you wish to evaluate the expression at once,
+            you can click on the arrow with asterisk <span class='butt'>→*</span> after reducible term.
+            If the evaluation is short enough, each reduction step will appear below
+            the clicked one. On the other hand, if the evaluation is long (<em>precisely, more than 50 steps</em>),
+            only the final reduced expression will be shown.
+            </p>
+
+            <h2 id='term_syntax'>Term syntax</h2>
+            <p>Parser-accepted, syntactically valid term is a&nbsp;sequence of lower- and uppercase letters, numerals, 
+            dots, equality signs, lambda characters, whitespace characters, and 
+            parentheses, adhering to one of the following grammars according to the selected
+            <a href='#type_system' class='intext'>type system:</a></p>
+
+            <h2 id='reductions'>Reductions</h2>
+
+            <h2 id='aliases_primitives'>Aliases <em>&amp;</em> Constants</h2>
+            <p>Altough similar in appearance, aliases and constants are somewhat different.
+            To input alias or constant, simply type its name into input box. You can change
+            default setting to interpret aliases and constant with same name as constants, instead
+            of aliases, or, if you want to use both constants and aliases from set of shared names,
+            use exclamantion mark <span class='butt'>!</span> before some term to override default setting for this given term.
+            For example, there is an alias "PLUS," that stands for pure lambda calculus church-encoded addition,
+            and constant function "PLUS," that takes two constant numbers and outputs another numerical constant as result.
+            Alias is a name for a given term, while Constant is pre-defined symbol that does not stand
+            for any other term. Constants can be functions or primitive values, such as numbers and
+            boolean values, all of which are defined outside of the lambda calculus.
+            </p>
+
+            <h2 id='type_system'>Type system</h2>
+            <ul>
+                <li><h4>None – Untyped lambda calculus</h4><p>This is bla ba</p></li>
+                <li><h4>Simply typed lambda calculus</h4><p>This is bla ba</p></li>
+                <li><h4>Hindley-Milner type system</h4><p>This is bla bThis is bla baa</p></li>
+            </ul>
+
+            <h2 id='import_export'>Import <em>&amp;</em> Export</h2>
+            <ul>
+                <li><h4>Export</h4><p>There are several output options: you can print the evaluation,
+                generate Latex source, or save it as a file. These export options save the whole
+                evaluation as shown on the screen, this means selected options, including Alias expansion and
+                Shorthand form, are used. In case of exporting the evaluation into a file, user-defined
+                Aliases are also saved to the file.
+                </p></li>
+                <li><h4>Import</h4><p>To </p></li>
+            </ul>
+
+            <h2 id='bottom_panel'>Bottom panel</h2>
+            <p>This panel is designated to present you with useful information: Whether the current term
+            (<em>the last in the evaluation</em>) contains redexes, and if so, what kind of redexes, and
+            especially, how many. If a&nbsp;<em>typed</em> system is selected, this panel will also show information
+            about type correctness. Information about currently selected type system is shown in the
+            right corner of this panel, but you cannot change it during the evaluation.
+            </p>
+            
+            <h2 id='examples'>Examples</h2>
+            <p>To evaluate particular expression, just click on it—a new window with evaluator set to a given
+            expression will be open in your browser.</p>
+
+            <h2 id='about'>About</h2>
+            <p>Created in <em>2018</em> by <span id='main'><sub>javascript needed for mail rendition</sub></span> as a practical part of bachelor 
+            thesis at Masaryk University.</p>
+            <p>Computer Modern font is licensed under free and open-source
+            <a class='intext' target='_blank' href='https://opensource.org/licenses/OFL-1.1'>SIL OPEN FONT LICENSE</a>.</p>
+            <p>This work is licensed under <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='intext' target='_blank'>CC0 - Public Domain</a>
+            to the extent permitted by law. The source code available in the <a class='intext' href='./src'><tt>./src</tt></a> folder.
+            </p>
+        </div>
+    </body>
+</html>
