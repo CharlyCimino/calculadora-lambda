@@ -1,1 +1,2 @@
-lambda calculus evaluator
+#lambda calculus evaluator
+kdlcj.gitlab.io/lambda
