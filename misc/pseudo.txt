@@ -1,0 +1,58 @@
+
+*evaluation:
+parse input string into internal representation (what about bound vars?)
+rename bound variables
+repeat:
+determine all possible beta reductions
+determine normal and strict order reductions
+generate html using possible reductions and env
+
+select one either by setting strategy or manually,
+    and apply it, return new term
+generate derivation tree and focus on the new term
+
+*env:
+split new term to parts, such that (existing) aliases are
+    separated from plaintext terms
+parse plaintext terms, expand aliases and join 
+    them into a new alias
+(enable churchnumerals, booleans, conditionals, combinators...)
+conflicting macro expansions and choosing redex? disable expansion on hover
+
+*practice:
+generate new simple term: make 2 or more redexes, and build up and down.
+ask for reduction based on a random strategy
+if correct, repeat with more complicated term
+else repeat with a term of a same complexity
+
+*message:
+closed form - beta normal form, no redexes (of strategy), type errors,
+number of possible redexes, "current beta is also eta", value or not (if typed)
+
+(maybe enable calling functions directly, with proper documentation somewhere)
+
+typed: Bool, Nat; how to add some more? esp. infinite types
+    how to distinguish between aliased numerals and values of type Num? remove.
+    addition of fix primitive?
+    how to work with primitive typed values via functions???
+    slides: addition of new rules, unviable
+
+*webapp: buttons and message swill contain "read more" option, which will open 
+documentation, explanation of given element on a new tab
+mobile app interface?
+
+*general:
+pre koho je bakalarka pisana? co sa predpoklada o citatelovi? 
+ako je urceny oponent?
+licencie
+zmena nazvu 'on-line' -> 'online'
+"moznost tlace"?
+
+*todo:
+partial application of primitives
+opravit redukcie,
+typove rozsirenia,
+opravit event handling,
+eta redukcie sprava
+parser,
+

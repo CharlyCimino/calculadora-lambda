@@ -1,0 +1,96 @@
+\documentclass[table, a4paper, 10pt]{article}
+\usepackage[hidelinks]{hyperref}    
+\usepackage{biblatex}
+\usepackage{fourier}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{makeidx}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsmath}
+\usepackage{newunicodechar}
+\usepackage{baskervald}
+
+\newunicodechar{λ}{\ensuremath{\lambda}}
+
+\bibliography{bibdatabase}
+
+\newcommand{\cit}[1]{\textsuperscript{\cite{#1}}}
+\newcommand{\footnoteafterquote}[1]{\hspace{0.05cm}\footnote{#1}}
+
+\begin{document}
+\section{Introduction}
+Lambda calculus is a formal system of logic, concerned with functions described as
+substitution-based evaluation rules, invented by Alonzo Church in the late 1920's. It plays an important role in computer science
+and mathematics, with applications in other fields, such as linguistics 
+and philosophy.\cit{cardoneHindley}
+
+The aim of this thesis is to design and implement a web application that evaluates
+user-input lambda calculus terms, both pure and typed, with a possibility of
+selecting a particular evaluation strategy and step-by-step evaluation, 
+multiple importing and exporting options, and several other features lacking 
+in publicly available preexisting solutions. The application should be useful to students of
+the course \textit{IA014~--~Advanced Functional Programming}, as it is intended to aid in the understanding
+of fundamental principles of lambda calculus taught therein.
+
+Firstly, a general overview of the importance of $\lambda$-calculus will be presented,
+including, to some extent overlapping topics of historical significance 
+and real-world applications---especially contributions to the theory of
+programming languages, then a rigorous definition of lambda calculus' syntax and semantics, together with
+descriptions of the implemented evaluation strategies, type systems, and extensions will be provided,
+and lastly, a thorough description of the evaluator web application itself will be given. In the appendix,
+one can find examples of some of the possible inputs to the application, along with
+an enumeration of pre-defined aliases and constants, potentially serving as a reference manual.
+
+\subsection{Historical background}
+\textit{``Wir müssen wissen -- wir werden wissen!''}\footnoteafterquote{German for ``We must know---we will know!''}
+were the well-known words of David Hilbert,
+countering the appliance of the Latin saying
+\textit{``Ignoramus et ignorabimus''}\footnoteafterquote{Latin for ``We do not know and we will not know''}
+to the natural sciences, and expressing his belief that any mathematical
+problem posed in an appropriate formal language
+can be solved, preferably by a mechanical means. 
+In 1928 Hilbert stated the challenge,
+titled \textit{\textswash{Entscheidungsproblem}}\footnote{German for ``Decision problem''},
+as a search for an algorithm deciding whether any
+first-order logic formula passed as an input
+can be proven, given a finite set of axioms, using the inference rules of the logic system.\cit{hilbert}
+In order to prove or disprove an existence of
+such an algorithm, there was a need to
+formalize the intuitive notion of an algorithm itself first.
+
+Turing machine, originally named \textit{a}-machine (automatic machine), one of such proposed
+models of computation, is an abstract machine devised
+to encapsulate the intuitive notion of effective computability. It generalizes
+a computer---a person mindlessly following a finite set of given
+instructions \textit{``in a desultory manner''}---by introducing
+a device of infinite sequential memory, finite table of instructions, and
+a state the device is in. The instructions determine what to write into the
+current memory cell based on its content and of the state of the machine,
+how to change the state, and what adjacent memory cell to read next.\cit{turingPaper}
+
+Adopting his earlier work on the foundation of mathematics, Alonzo Church
+has taken a different approach; the lambda calculus is defined
+as a system of nameless substitution-based functions with no explicit state or external memory,
+and due to its simplicity and expressivity has become a successful model of computation,
+with a multitude of contributions to the theory of programming languages.
+ 
+Turing has shown that Turing machine and lambda calculus are both equally powerful formalizations, i.e. that
+the classes of computable functions defined by each of them are the same.\cit{turingDefin}
+Assuming that functions on natural numbers computable by a human
+with limitless resources are the same as functions definable by Turing machine \textit{(Turing-Church conjecture)},
+the answer to the Entscheidungsproblem was found to be negative---no algorithm deciding on
+solution of any problem posed in a formal language can exist---by both Turing and Church
+independently in 1936.\cit{turingPaper}\cit{churchPaper}
+
+There are a number of conflicting accounts of the origin of Church's choice
+to use the Greek letter $\lambda$. Barendregt argues that such usage
+is a result of a typesetting mistake, erroneously replacing circumflex (\^{}),
+then already used as a class abstraction operator in Russel's and Whitehead's
+\textit{Principia Mathematica}, with lambda, similar in appearance.\cit{barenImpact}
+Dana Scott, a PhD student of Church's and a Turing Award laureate, opposes this
+hypothesis and claims the lambda letter was chosen arbitrarily.\cit{scottLecture}
+
+\printbibliography
+
+\end{document}

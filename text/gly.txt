@@ -1,0 +1,1268 @@
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+λ
+
+
+
+basicstyle=,breaklines=true
+tabsize=4
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Online Lambda
+Calculus Evaluator
+
+
+D R A F T
+
+
+
+
+
+
+Introduction
+Lambda calculus is a formal system of logic invented by Alonzo
+Church in the early 1930s, concerned with functions described as
+substitution-based evaluation rules. It plays an important role in computer science
+and mathematics, with applications in other fields, such as linguistics 
+and philosophy.cardoneHindley
+
+The aim of this thesis is to design and implement a web application that evaluates
+user-input lambda calculus terms, both pure and typed, with a possibility of
+selecting a particular evaluation strategy and step-by-step evaluation, 
+multiple importing and exporting options, and several other features lacking 
+in publicly available preexisting solutions. The application should be useful to students of
+the course IA014 -- Advanced Functional Programming, as it is intended to aid in the understanding
+of fundamental principles of lambda calculus taught therein.
+
+Firstly, a general overview of the importance of -calculus will be presented,
+including, to some extent overlapping topics of historical significance 
+and real-world applications---especially contributions to the theory of
+programming languages, then a rigorous definition of lambda calculus' syntax and semantics, together with
+descriptions of the implemented evaluation strategies, type systems, and extensions will be provided,
+and lastly, a thorough description of the evaluator web application itself will be given. In the appendix,
+one can find examples of some of the possible inputs to the application, along with
+an enumeration of pre-defined aliases and constants, potentially serving as a reference manual.
+
+Historical background
+``Wir müssen wissen -- wir werden wissen!''German for ``We must know---we will know!''
+were the well-known words of David Hilbert,
+countering the appliance of the Latin saying
+``Ignoramus et ignorabimus''Latin for ``We do not know and we will not know''
+to the natural sciences, and expressing his belief that any mathematical
+problem posed in an appropriate formal language
+can be solved, preferably by a mechanical means. 
+In 1928 Hilbert stated the challenge,
+entitled Entscheidungsproblem ,
+as a search for an algorithm deciding whether any
+first-order logic formula passed as an input
+can be proven, given a finite set of axioms, using the inference rules of the logic system.hilbert
+In order to prove or disprove existence of
+such an algorithm, there was a need to
+formalize the intuitive notion of an algorithm itself first.
+
+Turing machine, originally named a-machine (automatic machine), one of such proposed
+models of computation, is an abstract machine devised
+to encapsulate the intuitive notion of effective computability. It generalizes
+a computer---a person mindlessly following a finite set of given
+instructions ``in a desultory manner''---by introducing
+a device of infinite sequential memory, finite table of instructions, and
+a state the device is in. The instructions determine what to write into the
+current memory cell based on its content and of the state of the machine,
+how to change the state, and what adjacent memory cell to read next.turingPaper
+
+Adopting his earlier work on the foundation of mathematics, Alonzo Church
+has taken a different approach; the lambda calculus is defined
+as a system of nameless substitution-based functions with no explicit state or external memory,
+and due to its simplicity and expressivity has become a successful model of computation,
+with a multitude of contributions to the theory of programming languages.
+ 
+Turing has shown that Turing machine and lambda calculus are both equally powerful formalizations, i.e. that
+the classes of computable functions defined by each of them are the same.turingDefin
+Assuming that functions on natural numbers computable by a human
+with limitless resources are the same as functions definable by Turing machine (Turing-Church conjecture),
+the answer to the Entscheidungsproblem was found to be negative---no algorithm deciding on a
+solution of any problem posed in a formal language can exist---by both Turing and Church
+independently in 1936.turingPaperchurchPaper
+
+There are a number of conflicting accounts of the origin of Church's choice
+to use the Greek letter . Barendregt argues that such usage
+is a result of a typesetting mistake, erroneously replacing circumflex (),
+then already used as a class abstraction operator in Russel's and Whitehead's
+Principia Mathematica, with lambda, similar in appearance.barenImpact
+Dana Scott, a PhD student of Church's and a Turing Award laureate, opposes this
+hypothesis and claims the lambda letter was chosen arbitrarily.scottLecture
+
+Real-world applications
+Lambda calculus is regarded as a conceptual backbone of the
+functional programming, usually described as based on an evaluation
+of expressions, as opposed to the usual, contemporarily more popular approach of
+the imperative programming, based on a consecutive modification of a program's state. 
+
+A parallel between Turing machines (together with the underlying von Neumann architectures) and imperative languages, and between -calculus
+and functional programming languages can be drawn.baren94
+
+lisp, r.milner a ML, 
+
+Anonymous functions
+One of the most conspicuous of contributions are lambda expressions, commonly
+referred to as anonymous functions---function
+definitions not bound to a name as the usual function/procedure definitions.
+First appearing in LISP back in 1958, anonymous functions are
+ubiquitous in functional programming languages, and recently 
+ swiftly became popular 
+in mainstream imperative languages.
+Anonymous functions are useful to create short functions relevant only to a
+specific local scope, without affecting the global namespace, or when passing
+a function as an argument or constructing a functional return value.
+
+For instance, lambda expressions realized in several languages, defining a function
+comparable to a (named) mathematical function , are as follows:
+
+
+
+rl
+ -calculus & 
+
+			   LISP & ( lambda (x y) (* (+ x y) y))
+
+            Haskell & x y -> (x + y) * y
+
+              C++11 & [](auto x, auto y)  return (x + y) * y; 
+
+         Java SE 8  & (int x, int y) -> return (x + y) * y
+
+
+Higher-order functions
+A concept essential to -calculus,
+higher-order function is a function taking another function as an input,
+or returning function as a result. For example, the commonly used mathematical function composition operator , defined as 
+, can be understood as a (named) higher-order function, accepting
+two functions as an input, and returning a third as an output.
+example
+
+Partial application
+
+Type derivation
+
+
+Lambda calculus
+Pure lambda calculus
+The original presentation of -calculus, without any extensions as Let-expressions,
+constants, type systems, etc., is called pure. It is worth mentioning that the referenced extensions
+do not add to the expressivity of the pure system, and they can even 
+impose additional restrictions---the pure -calculus is already computationally universal, or Turing-complete.
+
+Term syntax
+During the history, there have been minor variations in term syntax
+used by various authors, each with their respective
+syntactic abbreviations, for example
+,churchPaper
+,zlatuska or
+,hudak which do all
+represent the same term. In this work, the grammar used the most
+frequently in the contemporary literature, coinciding with that
+presented in the course IA014slides will be adopted, along with the common
+abbreviation methods (§ ).
+
+In the following definitions, the symbols  or  represent some terms, and,
+depending on the context, the variable  stands for any variable.
+The language of -calculus, called  (capital lambda), is generated by the following
+grammar, written in Backus-Naur form, consisting of only three production rules:
+
+
+llll
+ &             &              & 0.4cmVariable
+
+    & &         & 0.4cmApplication
+
+    & &  & 0.4cmAbstraction
+
+
+
+Generally, a variable (a set of which will be written as )
+could be any unambiguous identifier 
+that is a member of a chosen countable set, but in this work, the set
+of variables is restricted to
+lowercase characters optionally followed by a numerical subscript,
+as the general case could interfere with the syntactic conventions
+of which the definition is given in the following section .
+Thus an equivalent, but more minimalistic definition is given by
+, where
+.
+The set of terminals consists of the elements of , dot and lambda character, and parentheses.
+Some of the syntactically correct words are , , or .
+
+Throughout this work, some parts of term may be referred to by the following names:
+an argument for the right-hand side of an application, a function for a term that is an instance of the 
+abstraction rule, a parameter of a function for the abstracted variable, and function body
+for the abstraction's term.
+
+
+(w
+.(ww))
+
+(o.(oo))
+
+
+
+Syntactic conventions 
+To make terms more succinct and convenient to write and read, the 
+following syntactic conventions, describing parentheses omission, are being used:
+*
+	x_1 x_2 x_3...x_n.M &(x_1.(x_2.(x_3.(...(x_n.M)...))))
+
+	M_1M_2M_3...M_n &(...((M_1M_2)M_3)...M_n)
+
+	x.x_1x_2...x_n &(x.(x_1x_2...x_n))
+
+The intuition behind the first two rules is rather straightforward, as the rules
+seemingly emulate the process of currying, i.e.
+a translation between function of multiple arguments (left-hand side) and multiple
+functions of a single argument (right-hand side).pierce Clearly, this is only
+a matter of syntactic simplicity and has no effect on the actual semantics.
+The third rule necessitates a precedence of the application rule over the abstraction rule.
+
+Terms can also be given a name---the choice of term names, or aliases, is restricted to 
+strings of uppercase letters, and strings of numerals. In this work, the aliases are set in roman type.
+The means of assigning terms to numeral names is described in section  -- Church encoding.
+
+Variable binding and substitution
+The substitution of one term for another lies at the very heart of -calculus'
+evaluation mechanics, as the idea of evaluating a function is expressed via replacing
+abstraction-bound variables with the provided argument. A variable  is bound in ,
+if occurs as an abstraction variable . The lambda symbol is also called
+an abstraction operator, and  the scope thereof. In order to define
+reductions and reduction strategies later, first the concept of free
+and bound variables must be introduced formally, using inductively defined
+function , mapping 
+terms to the respective sets of free variables in the following manner:zlatuska
+*
+	FV(x) &= x 
+
+    FV(MN) &= FV(M) FV(N)
+
+	FV(x.M) &= FV(M) x
+
+For example, , ,
+and . Some variable  occurring in a term  is
+said to be bound, if it is not a member of the set of free variables of the term .
+A term , such that , is called combinator.
+
+Although apparently trivial, the substitution of free variables of some term with an another term,
+the result being written as , can be precarious, for some of the 
+free variables of term  can become bound in the resulting term. A simple illustration of this
+phenomenon is the following function, , that could be understood as a function
+taking two parameters and returning the first. When this function is partially
+applied to a particular argument, , a naive replacement of 
+the bound variable  for the argument  would yield
+, that is, the identity function, a very different result from the expected function returning
+the first, already applied parameter , for any argument. The solution to this problem leads
+to renaming variables in the process of a non-capturing substitution.
+
+*
+	x[x := N] &N
+
+	y[x := N] &N,wherex y
+
+	(M_1M_2)[x := N] &(M_1[x := N])(M_2[x := N])
+
+	(x.M)[x := N] &x.M
+
+	(y.M)[x := N] &y.(M[x := N]), wherex y,x FV(M) y FV(N)
+
+	(y.M)[x := N] &s.(M[y := s][x := N]), wherex y,xFV(M) y FV(N)
+
+
+in the last rule, the variable  stands for such a variable ,
+
+where  is the least natural number such that 
+
+
+Reductions
+A single evaluation step, expressing the notion of function application, is
+formalized via the mechanism of so-called -reduction,
+consisting of substitution of all abstraction-bound variables with an
+application argument. 
+In this work, the terms evaluation and reduction are used interchangeably,
+albeit this treatment of the terms is not universal.pierce
+The formal -reduction axiom is as follows:
+*
+	(x.M)N _ M[x := N]
+
+The term of the form  is called a -redex (reducible expression),
+or, if not causing any ambiguity, simply a redex.
+As a redex can appear anywhere inside a term, a definition of a non-deterministic
+full beta reduction, enabling reduction of reducible expressions
+occurring deeper inside a term, and in any order, is given by the following rules,
+written using common notation for 
+inference rules with premises above the line, and a conclusion below the line:
+
+2
+
+	M
+	
+
+
+
+	
+	
+
+
+
+	
+	
+
+
+	
+	
+
+
+
+Simply put, employing the full -reduction, a redex can be reduced (top-left),
+redex can be evaluated inside an application (bottom), and finally,
+it can be evaluated inside an abstraction (top-right).
+A term that cannot be -reduced any further is said to be in
+-normal form.
+
+called -reduction (or -conversion), 
+enabling a contraction of terms
+
+
+	
+	
+
+
+church rosser, normal forns
+
+Reduction strategies
+Reduction strategy is a way of choosing which reducible expression, possibly out of many,
+to reduce. The two classes of reduction strategies are considered:
+a strict evaluation strategy (or eager evaluation strategy) does always perform an evaluation of arguments, regardless whether actually
+used inside the function's body. On the other hand, a non-strict evaluation strategy,
+or sometimes, lazy evaluation strategy, is a strategy
+evaluating arguments only if they are used in the function body.pierce Most programming languages employ
+some kind of strict evaluation strategy---this is especially true with regard to imperative languages,
+freely manipulating side-effects. A prominent example of a language that is employing a non-strict
+evaluation strategy is Haskell, as its purity 
+
+
+ allows for such a usage.
+
+
+
+These two C functions are presented as an example:
+
+2
+
+int hello(int parameter)
+
+   printf("Hello World!");
+   return 41;
+
+
+
+
+int fac(int n)
+
+   if (n == 0) return 1;
+   else return n * fac(n - 1);
+
+
+
+
+
+In the function call hello(fac(13)), the argument of the
+function hello is not used inside the function's body,
+in this case rendering the computation of fac(13) futile.
+Non-strict valuation strategy would replace all of the occurrences of
+parameter inside the body of hello, however, because there are none,
+the call would immediately produce a result of 41. The unsuitability of
+a non-strict evaluation in imperative languages is clear in this very example:
+hello(hello(0)) would, in this case, yield the anticipated result 41, but only one
+of the two expected
+Hello World! greetings would be printed. Nonetheless, non-strict
+evaluation strategies can be greatly beneficial, improving performance (by possible minimization the number of reductions),
+and allowing for an admission of non-terminating arguments.
+
+Using a strict evaluation, a computation of the following term would never terminate,
+as the argument itself is not terminating:
+
+
+
+  
+  
+  ,
+but conversely, a non-strict evaluation reaches normal form of this term immediately:
+
+   .
+This behavior is often taken advantage of when programming in the few languages that use a non-strict
+evaluation strategy, e.g. Haskell or slightly older Miranda.
+
+Besides the already defined full -reduction,
+non-deterministically selecting any of the reducible expression,
+these four other, deterministic evaluation strategies are implemented:
+
+Normal order Normal order is a non-strict evaluation strategy,
+selecting the leftmost, outermost of redexes for evaluation. This strategy
+is complete, or normalizing---hence the name,
+that is, if a normal form does exist, it will be reached.
+*
+&(x.x)((x.x)(z.(w.w)z))
+
+_&(x.x)(z.(w.w)z)
+
+_&z.(w.w)z
+
+_&z.z 
+
+
+Call by name non stricc
+*
+&(x.x)((x.x)(z.(w.w)z))
+
+_&(x.x)(z.(w.w)z)
+
+_&z.(w.w)z
+
+Applicative order stricc
+*
+&(x.x)((x.x)(z.(w.w)z))
+
+_&(x.x)((x.x)(z.z))
+
+_&(x.x)(z.z)
+
+_&z.z
+
+
+Call by value This strict evaluation strategy requires an introduction
+of the notion of values, that is, a subset of terms considered to be
+irreducible any further, with the computation on them being finished. In the pure -calculus,
+the only values are the instances of the abstraction rule,
+later on, however, the set of values will be extended by primitive values, such as
+numeric or logical constants, etc. (section ). The set of values
+is written as .
+
+
+llll
+ &             &  & 0.4cmAbstraction
+
+
+
+
+*
+&(x.x)((x.x)(z.(w.w)z))
+
+_&(x.x)(z.(w.w)z)
+
+_&z.(w.w)z
+
+
+Church encoding
+Church encoding is a means of representing data, and operation on them, using
+only pure lambda calculus. Because of the simplicity of the evaluation rules, the powerfulness
+and expressiveness, with which the data and operations are encoded, may be unexpected.
+not good - rewrite
+
+Church Booleans and logic operators
+Foremost, the definitions of the Boolean values can be understood as binary functions, returning
+the first of parameters in a case of true, and the second in a case
+of false value,
+, and .
+After the Boolean values are established, the definition of the fundamental
+logic operators is desired. It is required that  
+(logical disjunction written in prefix notation) will
+reduce to  if  and  are Church-encoded Boolean values,
+or could be reduced into them,
+and at least one of the terms  and  can be reduced to .
+Because, in pure lambda calculus, there is no guarantee of validity of
+the operands, there is no way of predicting the result of an application to
+an incorrect argument. (Later, the problem will be solved by typing
+the expressions in section  -- Typed lambda calculi). A term adhering to
+such requirements is:
+*
+	OR &y x. yyx
+
+	and similarly, AND &y x. yxy
+
+Another useful construct is a conditional, here expressed as a ternary function
+of which the first argument is the Boolean condition itself, returning one
+of the remaining arguments based on the condition. The definition of
+ (if---then---else) is as follows:
+*
+	ITE xyz.xyz
+
+This term makes use of the property of  and 
+returning the first, respectively the second, of the two arguments.
+
+Church numerals and arithmetic operators 
+Recursion
+Recursion is one of the fundamental principles of computer science,
+allowing for solving a problem by combining the solutions
+of the smaller instances of the same problem. In programming languages,
+or mathematical notation, this is realized by enabling functions
+to refer to themselves in a subsequent function call. Notwithstanding
+the practical aspects, recursion is able to completely substitute
+iterative control structures, as loops,
+which are sometimes entirely absent in functional programming languages, and clearly,
+absent in lambda calculus.
+
+However, because the -calculus terms are not assigned any idenfiers, or memory address,
+the self-reference
+
+
+
+
+Implemented extensions and syntactic sugar
+Constants
+For the sake of efficiency, convenience, and clarity, the constants, the set
+of which is written as , are introduced as
+an extension of the . Constants can represent primitive values,
+such as numbers or Booleans, as well as functions on terms (including constants), for instance,
+the arithmetic multiplication or the logical disjunction; functional constants
+are written using the prefix notation. Operational semantics
+is defined via a set of reduction rules, called -rules.baren94
+The left-hand side of a -rule is called -redex.
+
+
+llll
+ &             &                 & 0.2cmVariable
+
+    & &            & 0.2cmApplication
+
+    & &     & 0.2cmAbstraction
+
+    & &  & 0.2cmConstant
+
+
+llll
+ &             &     &
+
+    & &   &
+	
+
+
+
+The set of values, , is extended with constants. 
+
+An example of -rules for logical disjunction defined for constants:
+*
+ORFALSETRUE_FALSE
+
+ORFALSEFALSE_FALSE
+
+ORTRUETRUE_FALSE
+
+ORTRUEFALSE_FALSE
+
+
+In this work, the constants are written as strings of uppercase letters set in italic type.
+The exhaustive list of pre-defined constants can be found in the appendix .
+
+Let expressions
+In pure -calculus, the Let expression
+is a syntactic shorthand, enabling more convenient
+definitions of functions that appear to be named, and use them
+in a clearly bounded scope.
+
+While usually not capitalized in literature,
+in this work, the ``Let'' and ``In'' keywords are capitalized,
+as to prevent needless ambiguity arising
+from the established syntactic conventions, particularly the omission
+of parentheses in the application of variables.
+
+Typed lambda calculi 
+
+Simply typed lambda calculus
+The simply typed -calculus, often abbreviated as , is a system
+introduced by Alonzo Church to address the paradoxes arising from use of pure -calculus,
+namely the possibility of self-application of functions, generally inadmissible
+when dealing with conventional, set-theoretic understanding of functions, associating
+each element of domain to some element of the codomain, as
+
+An introduction of types to -calculus deals with, but 
+
+Types
+The system operates with a single,
+binary type constructor, arrow , taking two types  and , and
+constructing a new function type---a type of a function mapping input of type  to the result of type .
+As a base case, a finite number of atomic base types is considered, in the case
+of this work, these are  and .
+
+
+llll
+ &             &     &
+
+    & &  &
+
+    & &  &
+
+
+
+Term syntax
+The term syntax is largely unchanged, with an exception of
+the abstraction rule, adding an explicit type annotation of the parameter.
+
+llll
+ &             &                 & 0.2cmVariable
+
+    & &            & 0.2cmApplication
+
+    & &     & 0.2cmAbstraction
+
+    & &  & 0.2cmConstant
+
+
+lll
+ &             &
+
+    & &  
+
+
+
+Analogous to syntactic conventions of terms, a convention to 
+simplify the type notation is given by the following rule, asserting the right associativity of the arrow:
+*
+_1 _2 ... _n &(_1 (_2 (...(_n-1 _n)...))) 
+
+
+Hindley-Milner type system
+progress theorem, preservation, strong normalization etc
+
+
+llll
+ &             &                 & 0.2cmVariable
+
+    & &            & 0.2cmApplication
+
+    & &     & 0.2cmAbstraction
+
+    & &  & 0.2cmLet expression
+
+    & &  & 0.2cmConstant
+
+
+llll
+ &             &     &
+
+    & &  &
+	
+
+
+
+
+Evaluator
+The purpose of the implemented Lambda Calculus Evaluator,
+further simply the application, is to evaluate -calculus
+terms input by a user.
+The application provides functionality to
+choose an evaluation strategy, toggle between different modes
+of term-display, including rendering aliased terms as the alias name,
+or the term it represents, and between full-parenthesized terms over
+the shorthand form, as presented in section  -- Syntactic conventions.
+An effort was made to develop an ergonomic, easy-to-use application with 
+simple yet appealing visuals.
+
+Besides the pure, untyped -calculus, a user can also select one of the two
+type systems, Simply-Typed lambda calculus and Hindley-Milner type system,
+described in section , which halts the execution if the term is typed incorrectly or the type cannot
+be deduced, effectively stopping an evaluation of inconsistent terms.
+
+Technical aspects
+Using the three core web development technologies,
+HTML (Hypertext Markup Language), CSS (Cascading Style Sheets), and JavaScript,
+the evaluator is built as a single-page application,
+i.e. an application using solely dynamic modifications of the content of the current page,
+as opposed to redirecting, reloading, or downloading a page with a new content.
+Using a web browser as an application platform contributes
+to the application's compatibility and availability, 
+as there is no need for an installation on the target system.
+The application is static---it is executed exclusively on the client-side,
+in case of an actual deployment alleviating the server load on one hand,
+allowing the downloading and subsequent offline usage by a user on the other.
+
+To tightly control the application's typography across many different systems,
+the Computer Modern typeface, licensed under free and open-source SIL
+Open Font License, 
+is distributed along the application, allowing
+for consistent user experience and arguably aesthetically pleasing visual appearance of the application.
+
+Object-oriented programming paradigm, supported by JavaScript, is employed
+to model the data, as objects can closely match the term structure,
+e.g. a term can be represented by an interface, an abstraction can
+be an implementation thereof, closely matching the lambda calculus' grammar.
+Due to the JavaScript's dynamic nature, the mentioned interface is only implicit,
+as there is no syntactic support for such a construct in the language itself.
+Would the JavaScript be disabled in the user's browser, an appropriate notification will be displayed.
+
+libraries  frameworks
+
+The authorial source code is licensed under the public
+domain CC0 license ,
+allowing anybody to reuse the work for any purpose and with no restrictions.
+
+Features and respective user interfaces
+The application interface is structured, besides the Help page,
+as two screens: initial screen---the screen
+used to accept user input and to set preliminary options, e.g. a type system, and
+the main screen (fig. ) for evaluation of the already input terms,
+together with the relevant options and information presentation.
+
+
+
+
+
+
+
+
+
+
+Head navigation bar
+On the main screen, the head navigation bar accommodating 
+
+
+Evaluation space
+Bottom panel The bottom panel is a surface designed to show the information
+relevant to the evaluation of a particular term. The information about
+a number of each kind of redex present in the term on the last line is displayed,
+if a type system is selected, a type of the term or a notification
+of a failure to type the term, or when loading from a file,
+a number of loaded terms or aliases. The information is written in a clear and
+a complete sentence, communicating the message in a natural manner.
+The messages are dependent on the current type system, display settings, and reduction strategy.
+As an example, some terms and the corresponding bottom panel messages are given:
+
+
+cl
+    & The current term is in -normal form, and it can be -reduced.
+
+	 & The current term is in -normal form.
+
+ & The current term contains 1 beta-redex  1 delta-redex.
+
+ & The current term is in -normal form and its type is (e d) (c e) c d.
+
+ & The current term has no redexes and it is not typeable.
+
+
+
+
+User's input
+Upon entering the application, the user can immediately begin to type the expression
+to be evaluated. The outline of the input box is colored based on the syntactic
+correctness of the input term;  red on syntactically incorrect,
+and  green on
+syntactically correct terms, providing a useful and immediate feedback to the user after
+each keystroke. As per the information shown on the entry page, in order to
+enter the lambda character, the user simply enters the backslash key, which in turn
+gets automatically converted into the lambda character, written into the input box.
+The type constructor arrow for the simply typed -calculus is input
+in a similar fashion, using a succession of a hyphen and a greater-than sign.
+
+The entry page (the initial screen) is also equipped with links potentially useful
+to newcome users, specifically one to the Help page, and one specifically
+to the Examples section. On the initial screen, there is
+also an option to load a previously saved file. A closer look on
+the available import and export options is given in section .
+
+Aliases and constants can be used for input, including Church-encoded numerals up to three digits,
+except in the case of employed simply typed -calculus type system which does not
+accept Church-encoded data and functions.
+An option to disambiguate between conflicting alias- and constant names is available,
+delivering interpretation of the names accordingly to the preference set by a user. The default behavior is
+to interpret all conflicting names as constants. For instance, the user inputs
+a string ``21'': such a string could represent Church-encoded numeral as well as the primitive
+value---a constant defined outside the -calculus. Considering the user did not change the default
+setting, this string will be parsed as a constant of twenty-one. Occasionally, one may wish
+to enter both an alias and a constant. In such case, one can use an exclamation mark
+just before the conflicting name to indicate the exception to the preference setting.
+Again assuming the default setting, a string ``!FALSE 12 TRUE'' would be interpreted as
+, the constants being written in italic type.
+
+Because of the memory-intensive generation of Church-encoded numerals, a user can input
+such numerals only up to three digits. Displaying the terms on the screen is done
+by stack-based recursive procedure; rendering large enough numerals, and generally, any terms,
+will cause a stack overflow.
+
+A top-down recursive descent parser is used to translate the user's input text into an
+internal data structure: for each of the production rules of the grammar there exists
+a procedure deciding whether the currently parsed text is generated by the respective production rule.
+The expected input is short (dozens of characters), which allows use of an implementation with an arbitrary
+look-ahead, straightforwardly applying trial-and-error method for each of the rules,
+trading off efficiency for simplicity.compilers To enable a use of
+the shorthand notation, a preprocessor, working on a textual level, is
+employed to fill in the missing parentheses, bypassing problems connected
+with parsing the shorthand form's left-recursive grammar.
+
+To submit a syntactically correct term for an evaluation, a user clicks on the Submit button,
+or presses the Enter key, entering the main screen.
+
+Evaluation
+After a syntactically valid term has been submitted, one can commence and repeat
+the manual, step-by-step evaluation by
+mouse-clicking the desired redex inside the expression until a normal form is reached.
+The new, reduced expression will be rendered below the clicked one, together
+with an arrow indicator of the redex' kind.
+As described in section ,
+under full -reduction,
+redexes inside the term may be evaluated in an arbitrary order.
+If an evaluation strategy other than the full beta reduction is selected, 
+it is possible to select at most one redex, as accorded by the chosen evaluation strategy.
+When evaluating untyped terms, the default strategy is full beta reduction,
+otherwise, as formally defined, call by value is used, and the option to change the 
+strategy is disabled.
+Presence of a redex inside a term is
+indicated by an argument- and function color outline, shown on mouse-hover, as illustrated
+in figure . Different kinds of redexes are indicated by an outline of these different colors,
+written as hexadecimal triplets, using the RGB color model:
+
+ll
+	 98c6a8   &-redex
+
+	 e6c79b &-redex, Let expression
+
+	 8e8fa7&-redex' function
+
+	 bc8f8f &-redex' argument
+
+
+
+7cm0.02cm
+
+
+
+
+
+
+
+Expectedly, on mouse click, the highlighted expression will be reduced.
+The reason behind highlighting the redexes only on mouse-hover, instead of highlighting
+them permanently, is twofold: for visual clarity, as a permanent color outline would
+create bothersome visual clutter on the screen, and secondly, redexes are
+often nested, which would result in confusing outlines bearing no useful information.
+In a case of nested redexes, mouse selection is analyzed bottom-up---the deepest 
+redex that is pointed at will be chosen.
+
+As some of the evaluation chains, or derivations,
+can be rather long, in some cases using
+only step-by-step evaluation to reach the normal form would be tiring, or even altogether unfeasible.
+To directly evaluate a term at once, one can simply click on an asterisk-arrow following
+a reducible term, as visible in figure  towards the right margin.
+If a derivation is short enough, precisely, less than 50 evaluation steps,
+each evaluation step will be rendered on a new line, as if evaluated manually,
+otherwise, only the computed normal form
+will be appended to the already rendered derivation, and the information
+about the number of taken evaluation steps needed to reach the normal form will be
+displayed on the bottom panel. The user-selected reduction strategy 
+will be used for an immediate evaluation, except in the case of full beta reduction, where the
+normal order will be used, as it is complete---if the normal form does
+exist, it will eventually be reached.
+As the problem of recognizing the non-normalizing terms is generally undecidable,zlatuska
+the computation may continue indefinitely, without any means
+to circumvent or detect such non-terminating computation beforehand.
+A simple heuristic terminating execution
+of already computed terms is employed.
+Eta-reductions are not reduced automatically during the immediate evaluation and they
+have to be reduced only manually.
+clarify
+
+A summary information about the number of possible redexes
+on the current line, their kind, and, would be selected a type system, type of the evaluated term
+is presented on the bottom panel.
+maltyped terms ?
+
+Alias management
+Sometimes, it may be useful to assign a name to a commonly used terms. 
+Addition of an alias is done via the Add an alias dialog box (fig. ),
+accessible from the head navigation bar's Options.
+The name can be composed of only uppercase alphabetical characters,
+and this condition is
+reflected in the behavior of the name's input box: firstly, any alphabetical character
+will be immediately converted to upper case, and secondly, as non-alphabetical characters
+are not admissible for names, it is not possible to enter them into the box at all.
+
+The term to be named is entered in a similar fashion to that of the initial screen;
+expectedly, the already defined aliases and constants can be used to define a new alias.
+An option to enter the term on the last (current) line automatically into the 
+input box is available. The color of the input box, stylized as a line, is changing
+based on the syntactic correctness of the term, or if using an already defined name,
+in a same manner as that described in §  -- User's input.
+
+An alias is assigned only to a particular term; this means that
+generally the -equivalent terms do not share the same assigned name,
+the name is applied only to a syntactically identical terms.
+
+
+
+
+
+
+
+
+Display settings
+At any point, it is possible to change the active display setting via the 
+head navigation bar options Expand aliases and Shorthand form,
+both ranging over binary values. If the alias expansion option is active,
+terms will be rendered as the name they carry (fig. ). On mouseover, the term will
+be shown without the alias expansion, enabling a user to select potentially
+aliased reducible expressions. The suitability for the alias expansion is
+checked top-to-bottom: would there be a named term  containing another named term ,
+the name of the term  will be preferred.
+
+The shorthand form option toggles between rendition of terms (and types, if any present)
+either as fully parenthesized, or abbreviated,
+with unambiguously omitted parentheses, as described in section .
+
+
+
+
+
+
+
+
+By default, aliases are expanded, and terms and types are shown in the shorthand form.
+Changing any of the two settings will cause an immediate redraw of the terms currently
+presented on the screen.
+
+Help page
+The Help page does serve as a readily available reference, accessible from the 
+applications' head navigation bar at all times. Besides the general information about the application
+and its use, the help page also contains a number of illustrative -calculus expressions, possible to be
+evaluated using the application. To load the mentioned examples to the application, the user simply
+selects the term by clicking on it. Additionally, on the help page, one can find
+an enumeration of all available pre-defined aliases and constants.
+
+Import and export 
+At times, one may wish to store an evaluation chain for later retrieval, print the derivation,
+or export it as a source.
+The printing and source generation functionality utilizes the active display settings,
+namely the alias expansion and shorthand form, thus making the exporting
+facility as flexible as the web application's term-displaying abilities themselves.
+
+A quick and convenient way to share or save a term on the current line is to copy the
+URL from the web browser's address bar, as the application does encode
+the current term in the URL's optional fragment identifier part,
+initiated with a hash symbol (), typically used to point to a particular 
+portion of a document.
+
+The import and export options dialog (fig. ) is accessible via the Options menu from the head navigation bar.
+
+
+
+
+
+
+
+
+
+File input and output
+By user request, a file containing the derivation chain is generated and
+downloaded. The default name of the file is save.lambda, and in a human-readable
+format, the file holds the information about term on every line, what kind of reduction
+did produce the term (the arrow), and the type system used (figure ).
+All of the user-defined aliases are also stored inside the file,
+as the aliases may be used to display the saved terms, or simply to
+enable users to conveniently reuse the already defined aliases in the future;
+this is especially useful with a combination of the initial screen feature
+allowing loading only the aliases from the file, as these can be used for an input
+of a new term right away. When loading a file into the evaluator, the
+system prompt looks only for *.lambda files by default.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+source code generation
+The exported evaluation chain is typeset using the align* environment,
+available through the popular amsmath package (required for any distribution );
+the user has to include the  declaration in the 
+preamble of their document. On export, a new browser window
+will be opened, containing the  source code of the derivation as plain text.
+Before exporting a derivation, one should make sure that the desired
+displaying options are in place, as these will be used to generate the code to
+make the compiled result look essentially the same as the derivation shown on the application screen.
+In the same manner as on the  
+application screen, constants are set in italic type, and aliases are set in roman type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Printing
+
+Web browser compatibility
+The application is intended for use on personal computers equipped with a mouse
+or a trackpad, for it relies on mouse events, as mouse-over for redex highlighting,
+and due to this fact, an experience on mobile devices, as tablets or smartphones,
+may be impractical and less satisfactory, although technically attainable.
+
+
+mouse and on phones
+
+Comparison with existing solutions
+There are several existing applications for evaluating lambda calculus expressions available online.
+In order to justify the existence of yet another,
+a qualitative comparison of multiple features of six of the existing solutions to this work's is given in the
+following table:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Although an evaluation of user interfaces is 
+
+
+Conclusion
+Finito
+
+
+Predefined constants and aliases
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Input examples
+
+
+A minimal term of a given property is one of possibly many minimal terms with such property,
+and it is minimal by character count.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Attached files
+
+0.2em1em0.2em0.7pt0cm
+
+.1 lambda/.
+.2 index.html.
+.2 help.html.
+.2 help_style.css.
+.2 print.css.
+.2 style.css.
+.2 LICENSE.txt.
+.2 src/.
+.3 definitions.js.
+.3 Derivation.js.
+.3 Environment.js.
+.3 evaluator.js.
+.3 main.js.
+.3 Parser.js.
+.3 Term.js.
+.3 Type.js.
+.3 utils.js.
+.2 resources/.
+.3 favicon.png.
+.3 fonts/.
+.4 cmunrm.ttf.
+.4 cmunti.ttf.
+.4 LICENSE.txt.
+
+
+
+
+

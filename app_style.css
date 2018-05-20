@@ -1,0 +1,417 @@
+
+@font-face { 
+    font-family: cm;
+    src: url(resources/fonts/cmunrm.ttf);
+    font-style: normal;
+}
+
+@font-face {
+    font-family: cm;
+    src: url(resources/fonts/cmunti.ttf);
+    font-style: italic;
+}
+
+@keyframes appearBrown {
+    from { outline-color: rgba(0,0,0,0); }
+    to { outline-color: rosybrown; }
+}
+
+@keyframes appearB {
+    from { outline-color: rgba(0,0,0,0); }
+    to { outline-color: #98c6a8; }
+}
+
+@keyframes appearBlue {
+    from { outline-color: rgba(0,0,0,0); }
+    to { outline-color: #8e8fa7; }
+}
+
+@keyframes slideDown {
+    from { top: -10px; }
+      to { top: 0px; }
+}
+
+body {
+    margin: 0;
+    background-color: #f9f9f9;
+    font-family: cm;
+    font-size: 18pt;
+}
+
+sub {
+    font-size: 13pt;
+}
+
+kbd {
+    color: black;
+    font-family: monospace;
+    font-size: 15pt;
+    background: #e8e8e8;
+    border: 1px solid #a7a7a7;
+    border-radius: 4px;
+    padding: 3px 4px 0 4px;
+}
+
+a {
+    color: black;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+::selection {
+    background: black;
+    color: white;
+}
+
+.tex sub, .latex sub, .latex sup {
+  text-transform: uppercase;
+}
+
+.tex sub, .latex sub {
+  vertical-align: -0.5ex;
+  margin-left: -0.1667em;
+  margin-right: -0.125em;
+}
+
+.tex, .latex, .tex sub, .latex sub {
+  font-size: 1em;
+}
+
+.latex sup {
+  font-size: 0.85em;
+  vertical-align: 0.15em;
+  margin-left: -0.36em;
+  margin-right: -0.15em;
+}
+
+#inputOutputWindow {
+    display: none;
+    position: absolute; 
+    text-align: center;
+    background: white;
+    width: 500px;
+    padding-bottom: 32px;
+    left: 30%;
+    top: 20%;
+    font-size: 1.2em;
+    box-shadow: #dedddc 12px 8px 50px;
+}
+
+#ioHeader, #aliasHeader {
+    background: #D9D0DE;
+    width: 100%;
+    display: block;
+    font-style: italic;
+    font-size: 24pt;
+    text-align: center
+}
+
+.ioButt {
+    margin: 0.6em 0;  
+    cursor: pointer;
+    position: relative;
+}
+
+#ioOptions {
+    font-variant: all-small-caps;
+	position: relative;
+	top: 32px;
+}
+
+#ioClose {
+    bottom: 0;
+    display: block;
+    font-style: italic;
+    padding-top: 3em;
+}
+
+#initialScreen {
+    height: 100vh;
+    position: relative;
+    text-align: center;
+}
+
+#leads {
+    position: relative;
+    top: 20px;
+    font-size:15pt;
+}
+
+#inputPanel {
+    position: relative;
+    top: 28vh;
+}
+
+#initialMenuOptions {
+    padding-left: 50px; 
+}
+
+#welcomeOptions {
+    position: absolute;
+    background: blue;
+    width: 100%;
+    text-align: left;
+    top: 0;
+    font-size: 12pt;
+    background: #bcc3d0;
+    box-shadow: 0 -10px 32px;
+}
+
+#parserInputBox {
+    outline-offset: unset;
+    text-indent: 0.2em;
+    padding: 0;
+    border: none;
+    margin: 0;
+    font-family: cm;
+    font-size: 25pt;
+    outline: solid 3px #dadada;
+    width: 50vw;
+}
+
+#parserInputBox:focus {
+    outline: solid 3px #dadada;
+    outline-offset: unset;
+    box-shadow: 0 0 14px;
+}
+
+#parserTypeSystem {
+    padding-bottom: 0.3em;
+}
+
+.termContainer {
+    white-space: nowrap;
+    display: inline-block;
+}
+
+.type {
+    font-size: 15pt;
+    color: #292929;
+}
+
+.redex {
+    cursor: pointer;
+} 
+
+.termRedexA {
+    outline: 2px solid #8e8fa7; 
+    animation-name: appearBlue;
+    animation-duration: 0.3s;
+}
+
+.termRedexB {
+    outline: 2px solid rosybrown;
+    animation-name: appearBrown;
+    animation-duration: 0.3s;
+}
+
+.termDeltaRedex {
+    outline: 2px solid #98c6a8;
+    animation-name: appearB;
+    animation-duration: 0.3s;
+    cursor: pointer;
+}
+
+.termLet {
+    outline: 2px solid #e6c79b;
+    cursor: pointer;
+}
+
+.nodebox {
+    display: block;
+    white-space: nowrap;
+    height: 3.2em;
+}
+
+.children {
+    white-space: nowrap;
+}
+
+#noscr {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    font-size: 50pt;
+    color: rosybrown;
+    text-align: center;
+}
+
+#evaluationFrame {
+    padding-bottom: 42vh;
+    margin-top: 4em;
+    margin-left: 7em;
+}
+
+#headPanel {
+    position: fixed;
+    width: 100%;
+    top: 0;
+    text-transform: uppercase;
+    font-size: 12pt;
+}
+
+#bottomPanel {
+    position: fixed;
+    width: 100%;
+    bottom: 0;
+    background: #e2b7b7;
+    font-size: 18pt;
+    padding-left: 20px;
+    box-shadow: 0 10px 32px;
+}
+
+#main {
+    background: #a6bae2;
+    box-shadow: 0 -10px 32px;
+}
+
+#strategyMenu, #settingMenu {
+    animation: slideDown 0.07s;
+    background: #D9D0DE;
+	position: relative;
+	z-index: -1;
+	top: 0px;
+    display: none;
+}
+
+#displayMenu {
+    background: #efcc77;
+    display: none;
+}
+
+.menu {
+    padding-left: 50px;
+    user-select: none;
+}
+
+.option {
+    user-select: none;
+    cursor: pointer;
+}
+
+.option:hover {
+    text-decoration: underline;
+}
+
+.primitive, .amp, #strategyFrame, #macroFrame {
+    font-style: italic;
+}
+
+#mainScreen {
+    display: none;
+}
+
+#shorthandFrame {
+    font-style: italic;
+}
+
+.arrow {
+    display: inline-block;
+    width: 50px;
+    color: #474747;
+}
+
+#evalButton {
+    margin-left: 10px;
+    cursor: pointer;
+}
+
+#disciplineFrame {
+    font-style: italic;
+    float: right;
+    margin-right: 40px;
+}
+
+.lets {
+    font-size: 21pt;
+    font-style: italic;
+}
+
+#submitButton {
+    position: relative;
+    padding-top: 10px;
+    font-size: 25pt;
+    font-style: italic;
+}
+
+#aliasWindow {
+    display: none;
+    position: absolute;
+    top: 30%;
+    font-size: 25pt;
+    width: 100%;
+    text-align: center;
+}
+
+#aliasFrame {
+    text-align: initial;   
+    display: inline-block;
+    background: white;
+    width: 800px;
+    height: 256px;
+    box-shadow: #dedddc 12px 8px 50px;
+}
+
+.lineInput {
+    background: transparent; 
+    border: none;
+    outline: none;
+    font-family: cm;
+    font-size: 25pt;
+    text-overflow: ellipsis;
+    border-bottom: solid grey 3px;
+}
+#aliasNameInput {
+    text-align: right;
+    width: 6em;
+}
+
+#aliasTermInput {
+    text-align: left;
+}
+
+#lines {
+    position: relative;
+    top: 42px;
+    text-align: center;
+}
+
+#aliasButtons {
+    font-style: italic;
+    position: relative;
+    top: 90px;
+    left: 375px;
+}
+
+.aliasButt {
+    margin-left: 16px;
+}
+
+#aliasUseCurrent {
+    left: 236px;
+    position: absolute;
+}
+
+.aliasMessage {
+    font-size: 17pt;
+    font-style: italic;
+    position: relative;
+    left: 100px;
+    top: 0px;
+}
+
+#initialAboutLabel {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    font-size: 15pt;
+    font-style: italic;
+}
+
+#aliasError {
+    display: none;
+}

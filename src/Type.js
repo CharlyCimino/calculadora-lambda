@@ -1,5 +1,5 @@
 
-TypeDiscipline = {
+const TypeDiscipline = {
     UNTYPED        : 'Untyped',
     SIMPLY_TYPED   : 'Simply typed',
     HINDLEY_MILNER : 'Hindley-Milner',
@@ -17,7 +17,7 @@ class FunctionType {
     }
 
     write(dropParens = true) {
-        dropParens = dropParens && Settings.dropParens;
+        dropParens = dropParens && OLCE.Settings.dropParens;
         return (dropParens ? "" : "(") +
             this.from.write(false) + " → " +
             this.to.write() + (dropParens ? "" : ")");
@@ -210,7 +210,7 @@ class Polytype {
 
 class SimpleTypeAssignment {
     constructor(term, type) {
-        this.term = term; //or type variable
+        this.term = term;
         this.type = type;
     }
 }
@@ -317,14 +317,12 @@ class TypeEnvironment {
 
 function getSimpleType(term, env = new TypeEnvironment()) { //fix ite typing
     var rec = (t) => getSimpleType(t, env);
-
     if (term instanceof Abs) {
         env.addAssignment(
             new SimpleTypeAssignment(term.variable, term.inputType));
         var nt = rec(term.term);
         return nt ? new FunctionType(term.inputType, nt) : null;
     }
-
     if (term instanceof App) {
         var t1 = rec(term.term1);
         var t2 = rec(term.term2);
@@ -332,18 +330,14 @@ function getSimpleType(term, env = new TypeEnvironment()) { //fix ite typing
         if (t1 instanceof FunctionType && t1.from.equals(t2)) {
             return t1.to;
         }
-
         return null;
     }
-
     if (term instanceof Var) {
         return env.getTermType(term);
     }
-    
     if (term instanceof Primitive) {
         return term.type;
     } 
-
     return env.getTermType(term);
 }
 
@@ -510,7 +504,6 @@ function getHM(term, env = new TypeEnvironment(), v) {
     }
 
     if (term instanceof Let) {
-        //return getHM(applyBetaStep(term.desugar()), env, v); /////////////////////////////////////////
         var t = getHM(term.term1, env, v);
         if (!t || !t.type || !t.sub) {
             return null;
@@ -527,10 +520,3 @@ function getHM(term, env = new TypeEnvironment(), v) {
     }
 }
 
-function isType(exp) {
-    return exp instanceof FunctionType ||
-           exp instanceof BaseType     ||
-           exp instanceof TypeVariable;
-}
-
-var sub = new TypeEnvironment([new SimpleTypeAssignment(new TypeVariable('a'), new BaseType("Int")), new SimpleTypeAssignment(new TypeVariable('b'), new FunctionType(new BaseType('Int'), new BaseType('Bool')))]);

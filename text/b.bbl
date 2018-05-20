@@ -1,0 +1,590 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.6 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \sortlist[entry]{nty/global}
+    \entry{compilers}{book}{}
+      \name{author}{1}{}{%
+        {{hash=823163bfa62a4e8e6dd40e18152aa37d}{%
+           family={Aho},
+           family_i={A\bibinitperiod},
+           given={Alfred},
+           given_i={A\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Boston}%
+      }
+      \list{publisher}{1}{%
+        {Pearson/Addison Wesley}%
+      }
+      \strng{namehash}{823163bfa62a4e8e6dd40e18152aa37d}
+      \strng{fullhash}{823163bfa62a4e8e6dd40e18152aa37d}
+      \field{sortinit}{A}
+      \field{sortinithash}{b685c7856330eaee22789815b49de9bb}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{0-321-48681-1}
+      \field{title}{Compilers: principles, techniques, \& tools}
+      \field{year}{2007}
+      \field{pages}{61}
+      \range{pages}{1}
+    \endentry
+    \entry{baren94}{online}{}
+      \name{author}{1}{}{%
+        {{hash=716ad8a89d62068b7ad9277b361c94d5}{%
+           family={Barendregt},
+           family_i={B\bibinitperiod},
+           given={Henk},
+           given_i={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{716ad8a89d62068b7ad9277b361c94d5}
+      \strng{fullhash}{716ad8a89d62068b7ad9277b361c94d5}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Introduction to Lambda Calculus}
+      \field{year}{1994}
+      \verb{url}
+      \verb http://www.cse.chalmers.se/research/group/logic/TypesSS05/Extra/geuvers.pdf
+      \endverb
+    \endentry
+    \entry{barenImpact}{article}{}
+      \name{author}{1}{}{%
+        {{hash=716ad8a89d62068b7ad9277b361c94d5}{%
+           family={Barendregt},
+           family_i={B\bibinitperiod},
+           given={Henk},
+           given_i={H\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {[Association for Symbolic Logic, Cambridge University Press]}%
+      }
+      \strng{namehash}{716ad8a89d62068b7ad9277b361c94d5}
+      \strng{fullhash}{716ad8a89d62068b7ad9277b361c94d5}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{10798986}
+      \field{journaltitle}{The Bulletin of Symbolic Logic}
+      \field{number}{2}
+      \field{title}{The Impact of the Lambda Calculus in Logic and Computer Science}
+      \field{volume}{3}
+      \field{year}{1997}
+      \field{pages}{181\bibrangedash 215}
+      \range{pages}{35}
+      \verb{url}
+      \verb http://www.jstor.org/stable/421013
+      \endverb
+    \endentry
+    \entry{Interpreter3}{online}{}
+      \name{author}{1}{}{%
+        {{hash=1ba233717d77776028eb45e063664607}{%
+           family={Burch},
+           family_i={B\bibinitperiod},
+           given={Carl},
+           given_i={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{1ba233717d77776028eb45e063664607}
+      \strng{fullhash}{1ba233717d77776028eb45e063664607}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[web app]}
+      \field{title}{Lambda Calculator}
+      \field{urlday}{06}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2012}
+      \verb{url}
+      \verb http://www.cburch.com/lambda/
+      \endverb
+    \endentry
+    \entry{cardoneHindley}{incollection}{}
+      \name{author}{1}{}{%
+        {{hash=ee2b2e2f3d5c2cf3f87eac2b10356d60}{%
+           family={Cardone},
+           family_i={C\bibinitperiod},
+           given={Felice},
+           given_i={F\bibinitperiod}}}%
+      }
+      \name{editor}{2}{}{%
+        {{hash=c361d1c8116b72ace361bfc1ff8983a3}{%
+           family={Gabbay},
+           family_i={G\bibinitperiod},
+           given={Dov\bibnamedelima M.},
+           given_i={D\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=faf28a1806fb23c8e60eb802af5c06b4}{%
+           family={Woods},
+           family_i={W\bibinitperiod},
+           given={John},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {North-Holland}%
+      }
+      \strng{namehash}{ee2b2e2f3d5c2cf3f87eac2b10356d60}
+      \strng{fullhash}{ee2b2e2f3d5c2cf3f87eac2b10356d60}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Logic from Russell to Church}
+      \field{issn}{1874-5857}
+      \field{series}{Handbook of the History of Logic}
+      \field{title}{Lambda-Calculus and Combinators in the 20th Century}
+      \field{volume}{5}
+      \field{year}{2009}
+      \field{pages}{723\bibrangedash 817}
+      \range{pages}{95}
+      \verb{url}
+      \verb http://www.sciencedirect.com/science/article/pii/S1874585709700184
+      \endverb
+    \endentry
+    \entry{Interpreter2}{online}{}
+      \name{author}{1}{}{%
+        {{hash=9712c63ce071e7df9bfda2f7e3b8c67c}{%
+           family={Carter},
+           family_i={C\bibinitperiod},
+           given={Zach},
+           given_i={Z\bibinitperiod}}}%
+      }
+      \strng{namehash}{9712c63ce071e7df9bfda2f7e3b8c67c}
+      \strng{fullhash}{9712c63ce071e7df9bfda2f7e3b8c67c}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[web app]}
+      \field{title}{Lambda Calculus Evaluator}
+      \field{urlday}{06}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2010}
+      \verb{url}
+      \verb http://zaa.ch/lambdacalc/
+      \endverb
+    \endentry
+    \entry{churchPaper}{article}{}
+      \name{author}{1}{}{%
+        {{hash=eb8fba5b5e50ff0f327f47041fe3f891}{%
+           family={Church},
+           family_i={C\bibinitperiod},
+           given={Alonzo},
+           given_i={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Johns Hopkins University Press}%
+      }
+      \strng{namehash}{eb8fba5b5e50ff0f327f47041fe3f891}
+      \strng{fullhash}{eb8fba5b5e50ff0f327f47041fe3f891}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{00029327, 10806377}
+      \field{journaltitle}{American Journal of Mathematics}
+      \field{number}{2}
+      \field{title}{An Unsolvable Problem of Elementary Number Theory}
+      \field{volume}{58}
+      \field{year}{1936}
+      \field{pages}{345\bibrangedash 363}
+      \range{pages}{19}
+      \verb{url}
+      \verb http://www.jstor.org/stable/2371045
+      \endverb
+    \endentry
+    \entry{churchRosser}{article}{}
+      \name{author}{2}{}{%
+        {{hash=eb8fba5b5e50ff0f327f47041fe3f891}{%
+           family={Church},
+           family_i={C\bibinitperiod},
+           given={Alonzo},
+           given_i={A\bibinitperiod}}}%
+        {{hash=d8e5fa9158553013f69eb206b8ab3d3e}{%
+           family={Rosser},
+           family_i={R\bibinitperiod},
+           given={John\bibnamedelima Barkley},
+           given_i={J\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {American Mathematical Society}%
+      }
+      \strng{namehash}{8322e999008d4cac337e0722da28dfc1}
+      \strng{fullhash}{8322e999008d4cac337e0722da28dfc1}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{00029947}
+      \field{journaltitle}{Transactions of the American Mathematical Society}
+      \field{number}{3}
+      \field{title}{Some Properties of Conversion}
+      \field{volume}{39}
+      \field{year}{1936}
+      \field{pages}{472\bibrangedash 482}
+      \range{pages}{11}
+      \verb{url}
+      \verb http://www.jstor.org/stable/1989762
+      \endverb
+    \endentry
+    \entry{oracleRef}{online}{}
+      \name{author}{1}{}{%
+        {{hash=ee194b1430e3c914a4ab25a6fbe38e7c}{%
+           family={Corp.},
+           family_i={C\bibinitperiod},
+           given={Oracle},
+           given_i={O\bibinitperiod}}}%
+      }
+      \strng{namehash}{ee194b1430e3c914a4ab25a6fbe38e7c}
+      \strng{fullhash}{ee194b1430e3c914a4ab25a6fbe38e7c}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{day}{20}
+      \field{month}{04}
+      \field{title}{Java Programming Language Enhancements}
+      \field{year}{2018}
+      \verb{url}
+      \verb https://docs.oracle.com/javase/8/docs/technotes/guides/language/enhancements.html#javase8
+      \endverb
+    \endentry
+    \entry{Interpreter1}{online}{}
+      \name{author}{1}{}{%
+        {{hash=c87ff610a94122a4cfffe5fd88b4d874}{%
+           family={Gong},
+           family_i={G\bibinitperiod},
+           given={Liang},
+           given_i={L\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {University of California, Berkley}%
+      }
+      \strng{namehash}{c87ff610a94122a4cfffe5fd88b4d874}
+      \strng{fullhash}{c87ff610a94122a4cfffe5fd88b4d874}
+      \field{sortinit}{G}
+      \field{sortinithash}{1c854ef9177a91bf894e66485bdbd3ed}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[web app]}
+      \field{title}{λ Calculus Interpreter}
+      \field{urlday}{06}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2014}
+      \verb{url}
+      \verb https://people.eecs.berkeley.edu/~gongliang13/lambda/
+      \endverb
+    \endentry
+    \entry{hilbert}{book}{}
+      \name{author}{1}{}{%
+        {{hash=75b05ce956b23032ea66e4c981e8f28a}{%
+           family={Hilbert},
+           family_i={H\bibinitperiod},
+           given={David},
+           given_i={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer-Verlag}%
+      }
+      \strng{namehash}{75b05ce956b23032ea66e4c981e8f28a}
+      \strng{fullhash}{75b05ce956b23032ea66e4c981e8f28a}
+      \field{sortinit}{H}
+      \field{sortinithash}{82012198d5dfa657b8c4a168793268a6}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Grundzüge der theoretischen Logik}
+      \field{year}{1928}
+    \endentry
+    \entry{hudak}{article}{}
+      \name{author}{1}{}{%
+        {{hash=ebfbf9d5ed6e5a1698b8fe9fb2b322a4}{%
+           family={Hudak},
+           family_i={H\bibinitperiod},
+           given={Paul},
+           given_i={P\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {New York, NY, USA}%
+      }
+      \list{publisher}{1}{%
+        {ACM}%
+      }
+      \strng{namehash}{ebfbf9d5ed6e5a1698b8fe9fb2b322a4}
+      \strng{fullhash}{ebfbf9d5ed6e5a1698b8fe9fb2b322a4}
+      \field{sortinit}{H}
+      \field{sortinithash}{82012198d5dfa657b8c4a168793268a6}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0360-0300}
+      \field{journaltitle}{ACM Comput. Surv.}
+      \field{number}{3}
+      \field{title}{Conception, Evolution, and Application of Functional Programming Languages}
+      \field{volume}{21}
+      \field{year}{1989}
+      \field{pages}{359\bibrangedash 411}
+      \range{pages}{53}
+      \verb{url}
+      \verb http://doi.acm.org/10.1145/72551.72554
+      \endverb
+    \endentry
+    \entry{cppRef}{online}{}
+      \field{sortinit}{L}
+      \field{sortinithash}{872351f18d0f736066eda0bf18bfa4f7}
+      \field{labeltitlesource}{title}
+      \field{title}{Lambda expressions}
+      \field{urlday}{20}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2018}
+      \verb{url}
+      \verb http://en.cppreference.com/w/cpp/language/lambda
+      \endverb
+    \endentry
+    \entry{Interpreter4}{online}{}
+      \name{author}{1}{}{%
+        {{hash=e29319c798d6a25aa2d82a20155f40ec}{%
+           family={Lynn},
+           family_i={L\bibinitperiod},
+           given={Ben},
+           given_i={B\bibinitperiod}}}%
+      }
+      \strng{namehash}{e29319c798d6a25aa2d82a20155f40ec}
+      \strng{fullhash}{e29319c798d6a25aa2d82a20155f40ec}
+      \field{sortinit}{L}
+      \field{sortinithash}{872351f18d0f736066eda0bf18bfa4f7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[web app]}
+      \field{title}{Lambda Calculus}
+      \field{urlday}{06}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \verb{url}
+      \verb https://crypto.stanford.edu/~blynn/lambda/
+      \endverb
+    \endentry
+    \entry{slides}{misc}{}
+      \name{author}{1}{}{%
+        {{hash=5a56e2b7ce362c9deb05a6c3c6fa198a}{%
+           family={Obdržálek},
+           family_i={O\bibinitperiod},
+           given={Jan},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {Faculty of Informatics, Masaryk University}%
+      }
+      \list{publisher}{1}{%
+        {Faculty of Informatics, Masaryk University}%
+      }
+      \strng{namehash}{5a56e2b7ce362c9deb05a6c3c6fa198a}
+      \strng{fullhash}{5a56e2b7ce362c9deb05a6c3c6fa198a}
+      \field{sortinit}{O}
+      \field{sortinithash}{7803d2715d5e795e70382b084ab8d00e}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{lecture notes}
+      \field{title}{IA014 -- Advanced Functional Programming}
+      \field{year}{2017}
+      \verb{url}
+      \verb https://is.muni.cz/el/1433/jaro2017/IA014/um
+      \endverb
+    \endentry
+    \entry{pierce}{book}{}
+      \name{author}{1}{}{%
+        {{hash=7e1d791b455ff1bcdc6af498f60eff6e}{%
+           family={Pierce},
+           family_i={P\bibinitperiod},
+           given={Benjamin},
+           given_i={B\bibinitperiod}}}%
+      }
+      \list{location}{1}{%
+        {Cambridge, Mass}%
+      }
+      \list{publisher}{1}{%
+        {MIT Press}%
+      }
+      \strng{namehash}{7e1d791b455ff1bcdc6af498f60eff6e}
+      \strng{fullhash}{7e1d791b455ff1bcdc6af498f60eff6e}
+      \field{sortinit}{P}
+      \field{sortinithash}{c0a4896d0e424f9ca4d7f14f2b3428e7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{0-262-16209-1}
+      \field{title}{Types and programming languages}
+      \field{year}{2002}
+    \endentry
+    \entry{Interpreter5}{online}{}
+      \name{author}{1}{}{%
+        {{hash=4678849d9370044951ec261dd5c756a2}{%
+           family={Pryor},
+           family_i={P\bibinitperiod},
+           given={Jim},
+           given_i={J\bibinitperiod}}}%
+      }
+      \strng{namehash}{4678849d9370044951ec261dd5c756a2}
+      \strng{fullhash}{4678849d9370044951ec261dd5c756a2}
+      \field{sortinit}{P}
+      \field{sortinithash}{c0a4896d0e424f9ca4d7f14f2b3428e7}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[web app]}
+      \field{title}{Lambda Evaluator}
+      \field{urlday}{06}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2015}
+      \verb{url}
+      \verb http://lambda.jimpryor.net/code/lambda_evaluator/
+      \endverb
+    \endentry
+    \entry{scottLecture}{online}{}
+      \name{author}{1}{}{%
+        {{hash=d2a3260f2b3598bddd87dc469836d0d1}{%
+           family={Scott},
+           family_i={S\bibinitperiod},
+           given={Dana},
+           given_i={D\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {Association for Computing Machinery}%
+      }
+      \strng{namehash}{d2a3260f2b3598bddd87dc469836d0d1}
+      \strng{fullhash}{d2a3260f2b3598bddd87dc469836d0d1}
+      \field{sortinit}{S}
+      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[lecture recording]}
+      \field{title}{Lambda Calculus Then and Now}
+      \field{urlday}{15}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2013}
+      \verb{url}
+      \verb https://www.youtube.com/watch?v=SphBW9ILVPU
+      \endverb
+    \endentry
+    \entry{Interpreter6}{online}{}
+      \name{author}{1}{}{%
+        {{hash=ee969470f90111d65901119b1f962103}{%
+           family={Sestoft},
+           family_i={S\bibinitperiod},
+           given={Peter},
+           given_i={P\bibinitperiod}}}%
+      }
+      \strng{namehash}{ee969470f90111d65901119b1f962103}
+      \strng{fullhash}{ee969470f90111d65901119b1f962103}
+      \field{sortinit}{S}
+      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[web app]}
+      \field{title}{Lambda calculus reduction workbench}
+      \field{urlday}{06}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2002}
+      \verb{url}
+      \verb https://www.itu.dk/~sestoft/lamreduce/
+      \endverb
+    \endentry
+    \entry{turingDefin}{article}{}
+      \name{author}{1}{}{%
+        {{hash=67f34187545b64099d711eecd647423e}{%
+           family={Turing},
+           family_i={T\bibinitperiod},
+           given={Alan\bibnamedelima Mathison},
+           given_i={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {[Association for Symbolic Logic, Cambridge University Press]}%
+      }
+      \strng{namehash}{67f34187545b64099d711eecd647423e}
+      \strng{fullhash}{67f34187545b64099d711eecd647423e}
+      \field{sortinit}{T}
+      \field{sortinithash}{423d138a005a533b47e6475e39378bf2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{00224812}
+      \field{journaltitle}{The Journal of Symbolic Logic}
+      \field{number}{4}
+      \field{title}{Computability and λ-Definability}
+      \field{volume}{2}
+      \field{year}{1937}
+      \field{pages}{153\bibrangedash 163}
+      \range{pages}{11}
+      \verb{url}
+      \verb http://www.jstor.org/stable/2268280
+      \endverb
+    \endentry
+    \entry{turingPaper}{article}{}
+      \name{author}{1}{}{%
+        {{hash=67f34187545b64099d711eecd647423e}{%
+           family={Turing},
+           family_i={T\bibinitperiod},
+           given={Alan\bibnamedelima Mathison},
+           given_i={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{67f34187545b64099d711eecd647423e}
+      \strng{fullhash}{67f34187545b64099d711eecd647423e}
+      \field{sortinit}{T}
+      \field{sortinithash}{423d138a005a533b47e6475e39378bf2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the London Mathematical Society}
+      \field{number}{1}
+      \field{title}{On Computable Numbers, with an Application to the Entscheidungsproblem}
+      \field{volume}{s2-42}
+      \field{year}{1937}
+      \field{pages}{230\bibrangedash 265}
+      \range{pages}{36}
+      \verb{url}
+      \verb http://dx.doi.org/10.1112/plms/s2-42.1.230
+      \endverb
+    \endentry
+    \entry{zlatuska}{book}{}
+      \name{author}{1}{}{%
+        {{hash=92d71b23d67345a1ebccc19172208893}{%
+           family={Zlatuška},
+           family_i={Z\bibinitperiod},
+           given={Jiří},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Masaryk university}%
+      }
+      \strng{namehash}{92d71b23d67345a1ebccc19172208893}
+      \strng{fullhash}{92d71b23d67345a1ebccc19172208893}
+      \field{sortinit}{Z}
+      \field{sortinithash}{fdda4caaa6b5fa63e0c081dcb159543a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{80-210-0826-1}
+      \field{title}{Lambda-kalkul}
+      \field{year}{1993}
+    \endentry
+  \endsortlist
+\endrefsection
+\endinput
+

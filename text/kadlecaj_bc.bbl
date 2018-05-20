@@ -1,0 +1,228 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 2.6 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \sortlist[entry]{nty/global}
+    \entry{barenImpact}{article}{}
+      \name{author}{1}{}{%
+        {{hash=716ad8a89d62068b7ad9277b361c94d5}{%
+           family={Barendregt},
+           family_i={B\bibinitperiod},
+           given={Henk},
+           given_i={H\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {[Association for Symbolic Logic, Cambridge University Press]}%
+      }
+      \strng{namehash}{716ad8a89d62068b7ad9277b361c94d5}
+      \strng{fullhash}{716ad8a89d62068b7ad9277b361c94d5}
+      \field{sortinit}{B}
+      \field{sortinithash}{4ecbea03efd0532989d3836d1a048c32}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{10798986}
+      \field{journaltitle}{The Bulletin of Symbolic Logic}
+      \field{number}{2}
+      \field{title}{The Impact of the Lambda Calculus in Logic and Computer Science}
+      \field{volume}{3}
+      \field{year}{1997}
+      \field{pages}{181\bibrangedash 215}
+      \range{pages}{35}
+      \verb{url}
+      \verb http://www.jstor.org/stable/421013
+      \endverb
+    \endentry
+    \entry{cardoneHindley}{incollection}{}
+      \name{author}{1}{}{%
+        {{hash=ee2b2e2f3d5c2cf3f87eac2b10356d60}{%
+           family={Cardone},
+           family_i={C\bibinitperiod},
+           given={Felice},
+           given_i={F\bibinitperiod}}}%
+      }
+      \name{editor}{2}{}{%
+        {{hash=c361d1c8116b72ace361bfc1ff8983a3}{%
+           family={Gabbay},
+           family_i={G\bibinitperiod},
+           given={Dov\bibnamedelima M.},
+           given_i={D\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+        {{hash=faf28a1806fb23c8e60eb802af5c06b4}{%
+           family={Woods},
+           family_i={W\bibinitperiod},
+           given={John},
+           given_i={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {North-Holland}%
+      }
+      \strng{namehash}{ee2b2e2f3d5c2cf3f87eac2b10356d60}
+      \strng{fullhash}{ee2b2e2f3d5c2cf3f87eac2b10356d60}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Logic from Russell to Church}
+      \field{issn}{1874-5857}
+      \field{series}{Handbook of the History of Logic}
+      \field{title}{Lambda-Calculus and Combinators in the 20th Century}
+      \field{volume}{5}
+      \field{year}{2009}
+      \field{pages}{723\bibrangedash 817}
+      \range{pages}{95}
+      \verb{doi}
+      \verb https://doi.org/10.1016/S1874-5857(09)70018-4
+      \endverb
+      \verb{url}
+      \verb http://www.sciencedirect.com/science/article/pii/S1874585709700184
+      \endverb
+    \endentry
+    \entry{churchPaper}{article}{}
+      \name{author}{1}{}{%
+        {{hash=eb8fba5b5e50ff0f327f47041fe3f891}{%
+           family={Church},
+           family_i={C\bibinitperiod},
+           given={Alonzo},
+           given_i={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Johns Hopkins University Press}%
+      }
+      \strng{namehash}{eb8fba5b5e50ff0f327f47041fe3f891}
+      \strng{fullhash}{eb8fba5b5e50ff0f327f47041fe3f891}
+      \field{sortinit}{C}
+      \field{sortinithash}{59f25d509f3381b07695554a9f35ecb2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{00029327, 10806377}
+      \field{journaltitle}{American Journal of Mathematics}
+      \field{number}{2}
+      \field{title}{An Unsolvable Problem of Elementary Number Theory}
+      \field{volume}{58}
+      \field{year}{1936}
+      \field{pages}{345\bibrangedash 363}
+      \range{pages}{19}
+      \verb{url}
+      \verb http://www.jstor.org/stable/2371045
+      \endverb
+    \endentry
+    \entry{hilbert}{book}{}
+      \name{author}{1}{}{%
+        {{hash=75b05ce956b23032ea66e4c981e8f28a}{%
+           family={Hilbert},
+           family_i={H\bibinitperiod},
+           given={David},
+           given_i={D\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Springer-Verlag}%
+      }
+      \strng{namehash}{75b05ce956b23032ea66e4c981e8f28a}
+      \strng{fullhash}{75b05ce956b23032ea66e4c981e8f28a}
+      \field{sortinit}{H}
+      \field{sortinithash}{82012198d5dfa657b8c4a168793268a6}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{title}{Grundzüge der theoretischen Logik}
+      \field{year}{1928}
+    \endentry
+    \entry{scottLecture}{online}{}
+      \name{author}{1}{}{%
+        {{hash=d2a3260f2b3598bddd87dc469836d0d1}{%
+           family={Scott},
+           family_i={S\bibinitperiod},
+           given={Dana},
+           given_i={D\bibinitperiod}}}%
+      }
+      \list{organization}{1}{%
+        {Association for Computing Machinery}%
+      }
+      \strng{namehash}{d2a3260f2b3598bddd87dc469836d0d1}
+      \strng{fullhash}{d2a3260f2b3598bddd87dc469836d0d1}
+      \field{sortinit}{S}
+      \field{sortinithash}{fd1e7c5ab79596b13dbbb67f8d70fb5a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{[lecture recording]}
+      \field{title}{Lambda Calculus Then and Now}
+      \field{urlday}{15}
+      \field{urlmonth}{04}
+      \field{urlyear}{2018}
+      \field{year}{2013}
+      \verb{url}
+      \verb https://www.youtube.com/watch?v=SphBW9ILVPU
+      \endverb
+    \endentry
+    \entry{turingDefin}{article}{}
+      \name{author}{1}{}{%
+        {{hash=67f34187545b64099d711eecd647423e}{%
+           family={Turing},
+           family_i={T\bibinitperiod},
+           given={Alan\bibnamedelima Mathison},
+           given_i={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {[Association for Symbolic Logic, Cambridge University Press]}%
+      }
+      \strng{namehash}{67f34187545b64099d711eecd647423e}
+      \strng{fullhash}{67f34187545b64099d711eecd647423e}
+      \field{sortinit}{T}
+      \field{sortinithash}{423d138a005a533b47e6475e39378bf2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{00224812}
+      \field{journaltitle}{The Journal of Symbolic Logic}
+      \field{number}{4}
+      \field{title}{Computability and λ-Definability}
+      \field{volume}{2}
+      \field{year}{1937}
+      \field{pages}{153\bibrangedash 163}
+      \range{pages}{11}
+      \verb{url}
+      \verb http://www.jstor.org/stable/2268280
+      \endverb
+    \endentry
+    \entry{turingPaper}{article}{}
+      \name{author}{1}{}{%
+        {{hash=67f34187545b64099d711eecd647423e}{%
+           family={Turing},
+           family_i={T\bibinitperiod},
+           given={Alan\bibnamedelima Mathison},
+           given_i={A\bibinitperiod\bibinitdelim M\bibinitperiod}}}%
+      }
+      \strng{namehash}{67f34187545b64099d711eecd647423e}
+      \strng{fullhash}{67f34187545b64099d711eecd647423e}
+      \field{sortinit}{T}
+      \field{sortinithash}{423d138a005a533b47e6475e39378bf2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the London Mathematical Society}
+      \field{number}{1}
+      \field{title}{On Computable Numbers, with an Application to the Entscheidungsproblem}
+      \field{volume}{s2-42}
+      \field{year}{1937}
+      \field{pages}{230\bibrangedash 265}
+      \range{pages}{36}
+      \verb{url}
+      \verb http://dx.doi.org/10.1112/plms/s2-42.1.230
+      \endverb
+    \endentry
+  \endsortlist
+\endrefsection
+\endinput
+

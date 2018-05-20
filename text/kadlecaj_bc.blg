@@ -1,0 +1,15 @@
+[0] Config.pm:340> INFO - This is Biber 2.4
+[0] Config.pm:343> INFO - Logfile is 'kadlecaj_bc.blg'
+[100] biber:287> INFO - === Sun Apr 22, 2018, 12:53:09
+[238] Biber.pm:348> INFO - Reading 'kadlecaj_bc.bcf'
+[394] Biber.pm:742> INFO - Found 7 citekeys in bib section 0
+[466] Biber.pm:3151> INFO - Processing section 0
+[715] Biber.pm:3308> INFO - Looking for bibtex format file 'bibdatabase.bib' for section 0
+[756] bibtex.pm:1113> INFO - Decoding LaTeX character macros into UTF-8
+[774] bibtex.pm:974> INFO - Found BibTeX data source 'bibdatabase.bib'
+[930] UCollate.pm:65> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[930] UCollate.pm:65> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[930] Biber.pm:3028> INFO - Sorting list 'nty/global' of type 'entry' with scheme 'nty' and locale 'en-US'
+[930] Biber.pm:3032> INFO - No sort tailoring available for locale 'en-US'
+[941] bbl.pm:519> INFO - Writing 'kadlecaj_bc.bbl' with encoding 'UTF-8'
+[965] bbl.pm:615> INFO - Output to kadlecaj_bc.bbl

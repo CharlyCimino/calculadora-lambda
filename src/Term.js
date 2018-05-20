@@ -12,21 +12,24 @@ class Variable {
         return new Var(this.vardata);
     }
 
+    /*returns Term as string, uses user display settins*/
     toDisplay() {
         return this.vardata;
     }
 
+    /*returns Term as latex source, uses user display settings*/
     toLatex() {
         var character = this.vardata[0];
         var number    = this.vardata.match(/[a-z]*([0-9]+)/);
-        if (Global.aliases.containsTerm(this) && Settings.expandMacros) {
-          	return "\\mathrm{" + Global.aliases.getName(this) + "}";
+        if (OLCE.Data.aliases.containsTerm(this) && OLCE.Settings.expandMacros) {
+          	return "\\mathrm{" + OLCE.Data.aliases.getName(this) + "}";
         }
         return number ? character + "_{" + number[1] + "}" : character;
     }
 
-    toHtml(depth = "0") {
-        var env = Global.aliases;
+    /*returns Term as HTML source, uses user display settings*/
+    toHtml(depth = "0.") {
+        var env = OLCE.Data.aliases;
         var stringPart = this.vardata[0];
         var numPart;
         var variable;
@@ -44,11 +47,12 @@ class Variable {
             HtmlLiteral.end : "");
     }
 
+    /*Variable specific -- increments: x-> x_1, x_n -> x_(n+1)*/
     increment() {
         var stringPart = this.vardata[0];
         var numPart;
 		if (numPart = this.vardata.match(/[a-z]*([0-9]+)/)) {
-			numPart = numPart[1];	
+			numPart = numPart[1];
 		} else {
 			numPart = "0";
 		}
@@ -56,23 +60,19 @@ class Variable {
         return this;
     }
 
-    isVarFree() {
-        return true;
-    }
-
+    /*returns an array of free variables of a Term*/
     freeVars() {
         return [this];
     }
 
-    contains(term) {
-        return this.equals(term);
+    /*returns a sub-term based on a string encoding*/
+    fromCode(code, returnRedex = false, redex = null, original = this) {
+        return returnRedex ? redex : null;
     }
 
-    replace(old, newT) {
-        if (this.equals(old)) {
-            return newT.copy();
-        } 
-        return this.copy();
+    /*applies a function to every subterm (pre-order)*/
+    apply(fn) {
+        fn(this);   
     }
 }
 
@@ -93,19 +93,19 @@ class Application {
     }
 
     toDisplay(dropParens = true) {
-        dropParens = dropParens && Settings.dropParens;
+        dropParens = dropParens && OLCE.Settings.dropParens;
         var a = this.term1 instanceof App;
         return (dropParens ? "" : "(") + this.term1.toDisplay(a) + " " +
             this.term2.toDisplay(false) + (dropParens ? "" : ")");
     }
-	
+
 	toLatex(dropParens = true) {
-		dropParens = dropParens && Settings.dropParens;	
+		dropParens = dropParens && OLCE.Settings.dropParens;
 		var a = this.term1 instanceof App;
-		if (Global.aliases.containsTerm(this) && Settings.expandMacros) {
-            var name = Global.aliases.getName(this);
+		if (OLCE.Data.aliases.containsTerm(this) && OLCE.Settings.expandMacros) {
+            var name = OLCE.Data.aliases.getName(this);
             if (name == "Ω") {
-                return "\\Omega";    
+                return "\\Omega";
             } else if (name == "Θ") {
                 return "\\Theta";
             }
@@ -115,15 +115,16 @@ class Application {
 			this.term2.toLatex(false) + (dropParens ? "" : ")");
 	}
 
-    toHtml(depth = "0", originalTerm = this, dropParens = true) {
-        var env = Global.aliases;
+    toHtml(depth = "0.", originalTerm = this, dropParens = true) {
+        var env = OLCE.Data.aliases;
         var red = (a) => isReductionStrategyRedex(this, originalTerm) ? a : "";
 
         var childApp = this.term1 instanceof App;
-        dropParens = dropParens && Settings.dropParens;
+        dropParens = dropParens && OLCE.Settings.dropParens;
 
         return (env.containsTerm(this) ? HtmlLiteral.hasAlias : "") +
-            red(isDeltaRedex(this) ? "<span class='deltaRedex'>" : "<span class='redex'>") +
+            red(isDeltaRedex(this) ? "<span class='deltaRedex'>" :
+                                     "<span class='redex'>") +
             (dropParens ? "" : HtmlLiteral.combine("(", depth)) +
             red(isDeltaRedex(this) ? "" : "<span class='redA'>") +
             this.term1.toHtml(depth + "0", originalTerm, childApp) +
@@ -138,26 +139,24 @@ class Application {
             env.getName(this) + HtmlLiteral.end : "");
     }
 
-    isVarFree(variable) {
-        return this.term1.isVarFree(variable) &&
-               this.term2.isVarFree(variable);
-    }
-
     freeVars() {
         return this.term1.freeVars().concat(this.term2.freeVars());
     }
 
-    contains(term) {
-        return this.equals(term) ? true :
-               this.term1.contains(term) || this.term2.contains(term);
+    fromCode(code, returnRedex = false, redex = null, original = this) {
+        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        if (code == "") {
+            return returnRedex ? redex : this;
+        } 
+        return code[0] == "0" ?
+            this.term1.fromCode(code.substr(1), returnRedex, redex, original) :
+            this.term2.fromCode(code.substr(1), returnRedex, redex, original);
     }
 
-    replace(old, newT) {
-        if (this.equals(old)) {
-            return newT.copy();
-        }
-        return new App(this.term1.replace(old, newT),
-                       this.term2.replace(old, newT));
+    apply(fn) {
+        fn(this);
+        this.term1.apply(fn);
+        this.term2.apply(fn);
     }
 }
 
@@ -181,7 +180,7 @@ class Abstraction {
     }
 
     toDisplay(dropParens = true, dropLambda = false) {
-        var permission = Settings.dropParens && this.inputType == null;
+        var permission = OLCE.Settings.dropParens && this.inputType == null;
         var kidDropLam = this.term instanceof Abs && permission;
         var dropDot = kidDropLam;
 
@@ -196,9 +195,9 @@ class Abstraction {
     }
 
 	toLatex(dropParens = true, dropLambda = false) {
-		var permission = Settings.dropParens && this.inputType == null;		
+		var permission = OLCE.Settings.dropParens && this.inputType == null;
 		var kidDropLam = this.term instanceof Abs &&
-                         !Global.aliases.containsTerm(this.term) &&
+                         !OLCE.Data.aliases.containsTerm(this.term) &&
                          this.inputType == null &&
                          permission;
 		var dropDot    = kidDropLam;
@@ -206,20 +205,21 @@ class Abstraction {
 		dropParens = dropParens && permission;
 		dropLambda = dropLambda && permission;
 
-		if (Global.aliases.containsTerm(this) && Settings.expandMacros) {
-			return "\\mathrm{" + Global.aliases.getName(this) + "}";
+		if (OLCE.Data.aliases.containsTerm(this) && OLCE.Settings.expandMacros) {
+			return "\\mathrm{" + OLCE.Data.aliases.getName(this) + "}";
 		}
-	
+
 		return (dropParens ? "" : "(") + (dropLambda ? "" : "\\lambda ") +
 			this.variable.toLatex() +
-			(this.inputType !== null ? ":\\mathrm{" + this.inputType.write().replace(/→/g, "\\to") + "}": "") +
+			(this.inputType !== null ? ":\\mathrm{" +
+                this.inputType.write().replace(/→/g, "\\to") + "}": "") +
 			(dropDot ? "" : ".") + this.term.toLatex(true, kidDropLam) +
 			(dropParens ? "" : ")");
 	}
 
-    toHtml(depth = "0", originalTerm = this, dropParens = true, dropLam = false) {
-        var env = Global.aliases;
-        var permission = Settings.dropParens;
+    toHtml(depth = "0.", originalTerm = this, dropParens = true, dropLam = false) {
+        var env = OLCE.Data.aliases;
+        var permission = OLCE.Settings.dropParens;
         var kidDropLam = this.term instanceof Abs &&
                          !env.containsTerm(this.term) &&
                          permission &&
@@ -231,7 +231,7 @@ class Abstraction {
         return (isReductionStrategyRedex(this, originalTerm) ? "<span class='termLetRedex'>" : "") +
             (env.containsTerm(this) ? HtmlLiteral.hasAlias : "") +
             HtmlLiteral.combine((dropParens ? "" : "(") +
-            (dropLam ? "" : "λ"), depth) + this.variable.toHtml(depth) +
+            (dropLam ? "" : "λ"), depth) + this.variable.toHtml(depth + "0") +
             HtmlLiteral.combine(HtmlLiteral.type(this, depth) +
 			(kidDropLam ? "" : "."), depth) +
             this.term.toHtml(depth + "1", originalTerm, true, kidDropLam) +
@@ -242,36 +242,31 @@ class Abstraction {
             (isReductionStrategyRedex(this, originalTerm) ? HtmlLiteral.end : "");
     }
 
-    isVarFree(variable) {
-        if (this.variable.equals(variable)) {
-            return false;
-        }
-
-        return this.term.isVarFree(variable);
-    }
-
     freeVars() {
         var arr = this.term.freeVars();
         var result = [];
         for (var i = 0; i < arr.length; i++) {
             if (!arr[i].equals(this.variable)) {
-                result = result.concat(arr[i]); 
+                result = result.concat(arr[i]);
             }
         }
         return result;
     }
 
-    contains(term) {
-        return this.equals(term) ? true :   
-            this.variable.contains(term) || this.term.contains(term);
+    fromCode(code, returnRedex = false, redex = null, original = this) {
+        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        if (code == "") {
+            return returnRedex ? redex : this;
+        }
+        return code[0] == "0" ?
+            this.variable.fromCode(code.substr(1), returnRedex, redex, original) :
+            this.term.fromCode(code.substr(1), returnRedex, redex, original);
     }
 
-	replace(old, newT) {
-        if (this.equals(old)) {
-            return newT.copy();
-        }
-        return new Abs(this.variable.replace(old, newT),
-                       this.term.replace(old, newT));
+    apply(fn) {
+        fn(this);  
+        this.variable.apply(fn);
+        this.term.apply(fn);
     }
 }
 
@@ -308,8 +303,8 @@ class Let {
     }
 
 	toLatex() {
-		if (Global.aliases.containsTerm(this) && Settings.expandMacros) {
-			return "\\mathrm{" + Global.aliases.getName(this) + "}";
+		if (OLCE.Data.aliases.containsTerm(this) && OLCE.Settings.expandMacros) {
+			return "\\mathrm{" + OLCE.Data.aliases.getName(this) + "}";
 		}
 
 		return "\\mathit{Let" + (this.rec ? " Rec}\\;" : "}\\;") +
@@ -318,7 +313,7 @@ class Let {
 			this.term2.toLatex();
 	}
 
-    toHtml(depth = "0", originalTerm = this) {
+    toHtml(depth = "0.", originalTerm = this) {
         var letV = this.rec ? "LetRec " : "Let ";
         var varString = this.variable.toHtml(depth, originalTerm);
         var termNoAbs = this.term1;
@@ -339,34 +334,48 @@ class Let {
             (isReductionStrategyRedex(this, originalTerm) ? "</span>" : "");
     }
 
-    //let x = M in N ⇒ (λx.N) M
-    //let rec x = M in N ⇒ (λx.N) (Y λx.M)
-    desugar() { 
-        if (this.rec && Settings.discipline == TypeDiscipline.UNTYPED) {
+    desugar() {
+        if (this.rec && OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
             return new App(new Abs(this.variable, this.term2),
-                   new App(YCOMB, new Abs(this.variable, this.term1)));
-        } else if (this.rec) {
+                   new App(OLCE.Data.aliases.getTerm("Y"),
+                   new Abs(this.variable, this.term1)));
+        }
+        if (this.rec) {
             return new App(new Abs(this.variable, this.term2),
                    new App(constant_fix, new Abs(this.variable, this.term1)));
         }
-        var t = new App(new Abs(this.variable, this.term2), this.term1);
-        return t;
+        return this.desugarOnly();
     }
 
-    isVarFree(variable) { //implement
-        return; 
+    desugarOnly() {
+        return new App(new Abs(this.variable, this.term2), this.term1);
     }
 
-    freeVars() {//implement
-        return;
+    freeVars() {
+        return this.desugarOnly().freeVars();
     }
 
-    contains(term) { //implemetn
-        return;
+    fromCode(code, returnRedex = false, redex = null, original = this) {
+        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        if (code == "") {
+            return returnRedex ? redex : this;  
+        }
+        return code[0] == "0" ?
+            this.term1.fromCode(code.substr(1), returnRedex, redex, original) :
+            this.term2.fromCode(code.substr(1), returnRedex, redex, original);
     }
 
-    replace(old, newT) { //implemetn
-        return;
+    apply(fn) {
+        fn(this);
+        this.variable.apply(fn);
+        this.term1.apply(fn);
+        this.term2.apply(fn);
+    }
+
+    /*desugar inverse function, useful for substitution*/
+    static toLet(redex, rec = false) {
+        return new Let(redex.term1.variable.copy(),
+                       redex.term2.copy(), redex.term1.term, [], rec);
     }
 }
 
@@ -380,7 +389,7 @@ class Primitive {
 
     equals(other) {
         return other instanceof Primitive &&
-            this.name === other.name &&
+            this.name == other.name &&
             this.arity === other.arity;
     }
 
@@ -393,14 +402,14 @@ class Primitive {
     }
 
 	toLatex() {
-		if (Global.aliases.containsTerm(this)) {
-			return "\\mathrm{" + Global.aliases.getName(this) + "}";
+		if (OLCE.Data.aliases.containsTerm(this)) {
+			return "\\mathrm{" + OLCE.Data.aliases.getName(this) + "}";
 		}
 		return "\\mathit{" + this.name + "}";
 	}
 
-    toHtml(depth = "0", originalTerm = this) {
-        var env = Global.aliases;
+    toHtml(depth = "0.", originalTerm = this) {
+        var env = OLCE.Data.aliases;
         var s = HtmlLiteral.combine(HtmlLiteral.primitive +
             this.name + HtmlLiteral.end, depth);
 
@@ -411,47 +420,31 @@ class Primitive {
                 HtmlLiteral.end : "");
     }
 
-    isVarFree(variable) {
-        return true;
-    }
-
     freeVars() {
         return [];
     }
 
-    contains(term) {
-        return this.equals(term);
+    fromCode(code, returnRedex = false, redex = null, original = this) {
+        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        if (code == "") {
+            return returnRedex ? redex : this;
+        }
+        return null;
     }
 
-	replace(old, newT) {
-	    return old.equals(this) ? newT : old;	
-	}
-}
-
-var Var = Variable;
-var App = Application;
-var Abs = Abstraction;
-var Con = Primitive;
-
-function forAllDescendants(fn, term) {
-    var forAll = (nextTerm) => forAllDescendants(fn, nextTerm);
-
-    if (term instanceof Variable) {
-        fn(term);
-    } else if (term instanceof Application) {
-        fn(term);
-        forAll(term.term1);
-        forAll(term.term2);
-    } else if (term instanceof Abstraction) {
-        fn(term);
-        forAll(term.variable);
-        forAll(term.term);
-    } else if (term instanceof Primitive) {
-        fn(term);
+    apply(fn) {
+        fn(this);
     }
 }
 
-var HtmlLiteral = {
+/*shortcuts*/
+let Var = Variable;
+let App = Application;
+let Abs = Abstraction;
+let Con = Primitive;
+
+/*common HTML elements*/
+const HtmlLiteral = {
     lets: (m) => "<span class='lets'>" + m + "</span>",
     end: "</span>",
     isAlias: "<span class='isAlias'>",
@@ -459,11 +452,11 @@ var HtmlLiteral = {
     primitive: "<span class='primitive'>",
     deltaRedex: "<span class='deltaRedex'>",
     combine: (mid, dep) => HtmlLiteral.start(dep) + mid + "</span>",
-    start: (depth) => "<span onmouseover='highlight(this)' " +
-        "onmouseleave='highlight(this, false)' " +
-        "onclick='clickReduce(this)' class='" + depth + "'>",
-    type: (t, depth) => t.inputType != null ? "<span class='" + depth +
-        " type'>:" + t.inputType.write() + HtmlLiteral.end : "",
+    start: (depth) => "<span onmouseover='OLCE.UI.highlight(this)' " +
+        "onmouseleave='OLCE.UI.highlight(this, false)' " +
+        "onclick='OLCE.UI.clickReduce(\"" + depth + "\")'>",
+    type: (t, depth) => t.inputType != null ? "<span class='type'>:" +
+        t.inputType.write() + HtmlLiteral.end : "",
     deltaRedexWrapper: (condition, text) => condition ?
         HtmlLiteral.deltaRedex + text + HtmlLiteral.end : text,
 };

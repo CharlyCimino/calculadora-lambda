@@ -1,20 +1,20 @@
 
 @font-face { 
     font-family: cm; 
-    src: url(resources/fonts/cmu/cmunrm.ttf);
+    src: url(resources/fonts/cmunrm.ttf);
     font-style: normal;
 }
 
 @font-face {
     font-family: cm; 
-    src: url(resources/fonts/cmu/cmunti.ttf);
+    src: url(resources/fonts/cmunti.ttf);
     font-style: italic;
 }
 
 body {
     font-family: cm;
     font-size: 15pt;
-    background: #efefef;
+    background: white;
 }
 
 h2 {

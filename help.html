@@ -1,23 +1,14 @@
 <!DOCTYPE html>
-
-<html>
+<html lang='en'>
     <head>
         <title>λx.Help</title>
         <meta charset="utf-8">
         <link rel='stylesheet' type='text/css' href='help_style.css'>
         <link rel='icon' type='image/png' href='resources/favicon.png'>
     
-        <script src='src/Term.js'></script>
-        <script src='src/Type.js'></script>
-        <script src='src/Environment.js'></script>
-        <script src='src/Derivation.js'></script>
-        <script src='src/parser.js'></script>
-        <script src='src/evaluator.js'></script>
-        <script src='src/localAliases.js'></script>
-        <script src='src/main.js'></script>
         <script>
             function insertMain() {
-                var s = '@';s += 'mail'+'.muni.'+'cz';
+                var s = '@';s += 'ma' + 'il'+'.muni.'+'cz';
                 document.getElementById('main').innerText = 'k'+
                 'a'+'d'+'l'+'e'+'c'+'aj'+s;
             } 
@@ -43,7 +34,7 @@
             <p>
             <a class='intext' href='https://en.wikipedia.org/wiki/Lambda_calculus' target='_blank'>Lambda Calculus</a> is a formal system
             for expressing computation, devised by Alonzo Church in the 1930s. This 
-            client-side javascript-based application is an evaluator thereof.</p>
+            client-side JavaScript-based application is an evaluator thereof.</p>
             <p>To evaluate some lambda calculus term, type it in the evaluator text box, and, if it is
             <a class='intext' href='#term_syntax'>syntactically correct</a>, submit it to the evaluator.
             When entering a&nbsp;term, be sure to have selected the right 
@@ -84,6 +75,234 @@
             boolean values, all of which are defined outside of the lambda calculus.
             </p>
 
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;margin:0px auto;}
+.tg td{font-size:16pt;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg th{font-size:16pt;font-weight:normal;padding:10px 5px;border-style:solid;border-width:1px;overflow:hidden;word-break:normal;border-color:black;}
+.tg .tg-l711{border-color:inherit}
+.tg .tg-c3ow{border-color:inherit;text-align:center;vertical-align:top}
+.tg .tg-uys7{border-color:inherit;text-align:center}
+.tg .tg-us36{border-color:inherit;vertical-align:top}
+@media screen and (max-width: 767px) {.tg {width: auto !important;}.tg col {width: auto !important;}.tg-wrap {overflow-x: auto;-webkit-overflow-scrolling: touch;margin: auto 0px;}}</style>
+<div class="tg-wrap"><table class="tg">
+  <tr>
+    <th class="tg-l711"></th>
+    <th class="tg-uys7" colspan="2">Alias</th>
+    <th class="tg-c3ow" colspan="2">Constant</th>
+  </tr>
+  <tr>
+    <td class="tg-uys7">name</td>
+    <td class="tg-uys7" colspan="2">description and term</td>
+    <td class="tg-c3ow">arity</td>
+    <td class="tg-c3ow">description</td>
+  </tr>
+  <tr>
+    <td class="tg-uys7" rowspan="2">n</td>
+    <td class="tg-l711" colspan="2">Church encoded natural numbers, input up to 3 digits only</td>
+    <td class="tg-c3ow" rowspan="2">0</td>
+    <td class="tg-us36" rowspan="2">integer primitives. JavaScript implementation-defined range</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λf.λx.f <sup>n</sup> x</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">SUCC</td>
+    <td class="tg-us36" colspan="2">successor function on Chuch numerals</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+    <td class="tg-us36" rowspan="2">successor function on constants</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λnfx.f (n f x)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">PRED</td>
+    <td class="tg-us36" colspan="2">predecessor function, the least result is zero</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+    <td class="tg-us36" rowspan="2">predecessor function,<br>negative results allowed</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λnfx.n (λgh.h (g f)) (λ u.x) (λ u.u)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">PLUS</td>
+    <td class="tg-us36" colspan="2">addition function on Church numerals</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">addition function on constants</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λmnfx.m f (n f x)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">MINUS</td>
+    <td class="tg-us36" colspan="2">substraction on Church numerals, the least result is zero</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">substraction on constants,<br>negative results allowed</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λmn.n PRED m</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">TIMES</td>
+    <td class="tg-us36" colspan="2">multiplication on Church numerals</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">multiplication function on constants</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λmnf.m (n f)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">ISZERO</td>
+    <td class="tg-us36" colspan="2">predicate testing if a Church numeral is zero,<br>returning Church Boolean </td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+    <td class="tg-us36" rowspan="2">predicate testing is a numeral constant<br>is zero</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λn.n (λx.FALSE TRUE)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">LEQ</td>
+    <td class="tg-us36" colspan="2">predicate testing if a Church numeral is less than,<br>or equal to another</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">predicate testing if a numeral constant<br>is less than, or equal to another</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λmn.ISZERO (MINUS m n)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">DIV</td>
+    <td class="tg-us36" colspan="2">division on Church numerals</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">division function on integer constants</td>
+  </tr>
+  <tr>
+    <td class="tg-us36" colspan="2">recursive definition below</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">EQ</td>
+    <td class="tg-us36" colspan="2">predicate testing if two Church numerals are equal</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">equality function on numerical constants,<br>returns Boolean constant</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λmn.AND (LEQ m n) (LEQ n m)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">TRUE</td>
+    <td class="tg-us36" colspan="2">Church Boolean true</td>
+    <td class="tg-c3ow" rowspan="2">0</td>
+    <td class="tg-us36" rowspan="2">Boolean true constant</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λxy.x</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">FALSE</td>
+    <td class="tg-us36" colspan="2">Church Boolean false</td>
+    <td class="tg-c3ow" rowspan="2">0</td>
+    <td class="tg-us36" rowspan="2">Boolean false constant</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λxy.y</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">ITE</td>
+    <td class="tg-us36" colspan="2">conditional, the first argument is Church Boolean</td>
+    <td class="tg-c3ow" rowspan="2">3</td>
+    <td class="tg-us36" rowspan="2">conditional, the first argument Boolean constant,<br>type system dependent semantics</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λxyz.x y z</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">OR</td>
+    <td class="tg-us36" colspan="2">logical conjunction on Church Booleans</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">logical conjunction on Boolean constants</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λyx.y y x</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">AND</td>
+    <td class="tg-us36" colspan="2">logical disjunction on Church Booleans</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">logical disjunction on Boolean constants</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λyx.y x y</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">NOT</td>
+    <td class="tg-us36" colspan="2">logical negation on Church Booleans</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+    <td class="tg-us36" rowspan="2">logical negation on Boolean constants</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λx.x FALSE TRUE</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">FIX</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+    <td class="tg-us36" rowspan="2">fixed point of the abstraction input</td>
+  </tr>
+  <tr>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">Y</td>
+    <td class="tg-us36" colspan="2">fixed point combinator</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λf.(λx.f (x x)) (λ x.f (x x))</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">THETA</td>
+    <td class="tg-us36" colspan="2">fixed point combinator, displayed as Θ</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">(λxf.f (x x f)) (λxf.f (x x f))</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">OMEGA</td>
+    <td class="tg-us36" colspan="2">Omega combinator, displayed as Ω</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">(λx.x x) (λ x.x x)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">S</td>
+    <td class="tg-us36" colspan="2">pure λ-calculus S combinator</td>
+    <td class="tg-c3ow" rowspan="2">3</td>
+    <td class="tg-us36" rowspan="2">S combinator constant</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λxyz.x z (y z)</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">K</td>
+    <td class="tg-us36" colspan="2">pure λ-calculus K combinator</td>
+    <td class="tg-c3ow" rowspan="2">2</td>
+    <td class="tg-us36" rowspan="2">K combinator constant</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λij.i</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" rowspan="2">I</td>
+    <td class="tg-us36" colspan="2">pure λ-calculus I combinator</td>
+    <td class="tg-c3ow" rowspan="2">1</td>
+    <td class="tg-us36" rowspan="2">I combinator constant</td>
+  </tr>
+  <tr>
+    <td class="tg-c3ow" colspan="2">λi.i</td>
+  </tr>
+</table></div>
+
             <h2 id='type_system'>Type system</h2>
             <ul>
                 <li><h4>None – Untyped lambda calculus</h4><p>This is bla ba</p></li>
@@ -99,7 +318,9 @@
                 Shorthand form, are used. In case of exporting the evaluation into a file, user-defined
                 Aliases are also saved to the file.
                 </p></li>
-                <li><h4>Import</h4><p>To </p></li>
+                <li><h4>Import</h4><p>You can import a previously saved file: either a full derivation,
+                including the user-defined aliases, or just the aliases. The page URL
+                is pointing to the last term, so you can copy and paste it.</p></li>
             </ul>
 
             <h2 id='bottom_panel'>Bottom panel</h2>
@@ -115,12 +336,12 @@
             expression will be open in your browser.</p>
 
             <h2 id='about'>About</h2>
-            <p>Created in <em>2018</em> by <span id='main'><sub>javascript needed for mail rendition</sub></span> as a practical part of bachelor 
+            <p>Created in <em>2018</em> by <span id='main'><sub>JavaScript needed for mail rendition</sub></span> as a practical part of bachelor 
             thesis at Masaryk University.</p>
             <p>Computer Modern font is licensed under free and open-source
             <a class='intext' target='_blank' href='https://opensource.org/licenses/OFL-1.1'>SIL OPEN FONT LICENSE</a>.</p>
             <p>This work is licensed under <a href='https://creativecommons.org/publicdomain/zero/1.0/' class='intext' target='_blank'>CC0 - Public Domain</a>
-            to the extent permitted by law. The source code available in the <a class='intext' href='./src'><tt>./src</tt></a> folder.
+            to the extent permitted by law. The source code is available at <a class='intext' href='https://gitlab.com/kdlcj/lambda'>gitLab</a>.
             </p>
         </div>
     </body>

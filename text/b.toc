@@ -1,0 +1,145 @@
+\boolfalse {citerequest}\boolfalse {citetracker}\boolfalse {pagetracker}\boolfalse {backtracker}\relax 
+\defcounter {refsection}{0}\relax 
+\select@language {english}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {1}Introduction}{1}{section.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.1}Historical background}{1}{subsection.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {1.2}Real-world applications}{2}{subsection.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Anonymous functions}{2}{section*.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Higher-order functions}{2}{section*.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Partial application}{3}{section*.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Type derivation}{3}{section*.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {2}Lambda calculus}{4}{section.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.1}Pure lambda calculus}{4}{subsection.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.1}Term syntax}{4}{subsubsection.2.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.2}Syntactic conventions}{4}{subsubsection.2.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.3}Variable binding and substitution}{5}{subsubsection.2.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.4}Operations}{6}{subsubsection.2.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{$\beta $-reduction}{6}{section*.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{$\eta $-reduction}{6}{section*.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{$\alpha $-conversion}{7}{section*.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.5}Reduction strategies}{7}{subsubsection.2.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Normal order}{8}{section*.9}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Call by name}{8}{section*.10}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Applicative order}{8}{section*.11}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Call by value}{8}{section*.12}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.6}Church encoding}{9}{subsubsection.2.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Church Booleans and logic operators}{9}{section*.13}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Church numerals and arithmetic operators}{9}{section*.14}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.7}Recursion}{9}{subsubsection.2.1.7}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.1.8}Implemented extensions and syntactic sugar}{10}{subsubsection.2.1.8}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Constants}{10}{section*.15}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{\textit {Let} expressions}{10}{section*.16}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {2.2}Typed lambda calculi}{11}{subsection.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.2.1}Simply typed lambda calculus}{11}{subsubsection.2.2.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Types}{11}{section*.17}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Term syntax}{12}{section*.18}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Typing}{12}{section*.19}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Evaluation}{12}{section*.20}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Strong normalization}{12}{section*.21}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Recursion}{12}{section*.22}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{\textit {Let} expressions}{12}{section*.23}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Preservation theorem}{12}{section*.24}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {2.2.2}Hindley-Milner type system}{13}{subsubsection.2.2.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {3}Evaluator}{14}{section.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.1}Features and the corresponding user interfaces}{14}{subsection.3.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Head navigation bar}{14}{section*.25}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Evaluation space}{15}{section*.26}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Bottom panel}{15}{section*.27}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {3.1.1}User's input}{15}{subsubsection.3.1.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Aliases and constants}{16}{section*.28}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {3.1.2}Evaluation}{16}{subsubsection.3.1.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Immediate evaluation}{17}{section*.29}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {3.1.3}Alias management}{17}{subsubsection.3.1.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {3.1.4}Display settings}{18}{subsubsection.3.1.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {3.1.5}Help page}{18}{subsubsection.3.1.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\numberline {3.1.6}Import and export}{19}{subsubsection.3.1.6}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{File input and output}{19}{section*.30}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{\LaTeX \tmspace +\thickmuskip {.2777em}source code generation}{20}{section*.31}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Printing}{20}{section*.32}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {3.2}Comparison with existing solutions}{21}{subsection.3.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {4}Implementation}{22}{section.4}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.1}Structure}{22}{subsection.4.1}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{The entry point}{23}{section*.33}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Internal representation}{23}{section*.34}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.2}Operation}{24}{subsection.4.2}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{HTML structure and DOM}{24}{section*.35}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Text input processing}{24}{section*.36}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Mouse redex highlighting processing}{24}{section*.37}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Mouse redex clicking processing}{25}{section*.38}
+\defcounter {refsection}{0}\relax 
+\contentsline {paragraph}{Evaluation}{25}{section*.39}
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\numberline {4.3}Compatibility and performance}{25}{subsection.4.3}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {5}Conclusion}{27}{section.5}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {A}Predefined constants and aliases}{28}{appendix.A}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {B}Input examples}{29}{appendix.B}
+\defcounter {refsection}{0}\relax 
+\contentsline {section}{\numberline {C}Attached files}{30}{appendix.C}

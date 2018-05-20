@@ -1,5 +1,4 @@
 
-// experimental
 class Parser {
     constructor(word) {
         this.index = 0;
@@ -84,19 +83,22 @@ class Parser {
         }
     
         var word = chars.join("");
-        var alias = word.match(/[0-9]{4,}/) ? null : Global.aliases.getTerm(word);
-        var constant = Global.constants.map(x=>x.name).indexOf(word);
-        constant = constant >= 0 ? Global.constants[constant] : null;
+        var alias = word.match(/[0-9]{4,}/) ? null : OLCE.Data.aliases.getTerm(word);
+        var constant = OLCE.Data.constants.map(x => x.name).indexOf(word);
+        constant = constant >= 0 ? OLCE.Data.constants[constant] : null;
         constant = word.match(/-?[0-9]/) ? pri_n(word) : constant;
+        if (OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
+            alias = alias && alias.simpleTypedOnly ? alias : null;
+        }
 
         if (!alias || !constant) {
             return alias ? alias : constant;
         }
 
 		if (other) {
-            return Settings.preferConstants ? alias : constant;
+            return OLCE.Settings.preferConstants ? alias : constant;
         }
-        return Settings.preferConstants ? constant : alias;
+        return OLCE.Settings.preferConstants ? constant : alias;
     }
 
     parseVar() {
@@ -145,6 +147,10 @@ class Parser {
         return false;
     }
 
+    parseArrow() {
+        return this.parseCharacter("→");
+    }
+
     parseAbs() {
         if (this.errmsg != null) {
             return null;
@@ -161,7 +167,7 @@ class Parser {
         check = check && this.parseCharacter('λ');
         var variable = this.parseVar();
 
-        if (Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
+        if (OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
             check = check && this.parseCharacter(':');   
             type = this.parseType();
             if (!type) {
@@ -171,13 +177,23 @@ class Parser {
 
         check = check && this.parseCharacter('\\.');
         var term = this.parseTerm();
+        var otherTerms = [];
+        var oTerm;
+        while (oTerm = this.maybe('parseTerm')) {
+            otherTerms.push(oTerm); 
+        }
         check = check && this.parseCharacter('\\)');
 
         if (!term || !variable || !check) {
             return null;
         }
         
-        return new Abs(variable, term, type);
+        var result = term;
+        for (var i = 0; i < otherTerms.length; i++) {
+            result = new App(result, otherTerms[i]); 
+        }
+        
+        return new Abs(variable, result, type);
     }
 
     parseLet() {
@@ -189,7 +205,6 @@ class Parser {
         }
         this.eatWhite();
         if (!this.word[this.index]) {
-            this.error("let");
             return null;
         }
         if (this.word.substr(this.index, 3).match(/Let/)) {
@@ -210,8 +225,9 @@ class Parser {
         if (!this.parseCharacter('=')) {
             return null; 
         }
-
+        var t = null;
         var term1 = this.parseTerm(); 
+
         if (!term1) {
             return null;
         }
@@ -227,12 +243,17 @@ class Parser {
             return null;
         }
         var term2 = this.parseTerm();
-        if (Settings.discipline != TypeDiscipline.UNTYPED) {
-            Settings.strategy = EvaluationStrategy.CALL_BY_VALUE;
-            Settings.lockStrategy = true;
+        var allTerms = [term2];
+        var result = allTerms[0];
+        while (t = this.maybe('parseTerm')) {
+            allTerms.push(t);  
         }
+        for (var i = 1; i < allTerms.length; i++) {
+            result = new App(result, allTerms[i]);
+        }
+
         return variable && term1 && term2 ?
-            new Let(variable, term1, term2, [], rec) : null;
+            new Let(variable, term1, result, [], rec) : null;
     }
 
     parseApp() {
@@ -294,11 +315,24 @@ class Parser {
         var from = this.parseType();
         this.parseCharacter('→');
         var to   = this.parseType();
+        
+        var others = [from, to];
+        while (this.maybe('parseArrow')) {
+            others.push(this.parseType());
+        }
         this.parseCharacter('\\)');
-        if (from == null || to == null) {
+        var result = others[others.length - 1];
+        if (result == null) {
             return null;
-        } 
-        return new FunctionType(from, to);
+        }
+        for (var i = others.length - 2; i >= 0; i--) {
+            if (others[i] == null) {
+                return null;  
+            }
+            result = new FunctionType(others[i], result); 
+        }
+        
+        return result;
     }
 
     parseType() {
@@ -310,18 +344,18 @@ class Parser {
 
     parseTerm() {
         var term = null;
+        term = term == null ? this.maybe('parseApp') : term;
         term = term == null ? this.maybe('parseLet') : term;
         term = term == null ? this.maybe('parseAliasPrimitive') : term;
         term = term == null ? this.maybe('parseVar') : term;
         term = term == null ? this.maybe('parseAbs') : term;
-        term = term == null ? this.maybe('parseApp') : term;
         this.eatWhite();
         return term;
     }
 }
 
 function abstractionMultiple(string) { // \xyz.T -> \x.\y.\z.T
-    if (string == null || Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
+    if (string == null || OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
         return string;
     }
     var result;
@@ -376,7 +410,7 @@ function abstractionParenthesis(string) { // \x.\y.\z.T -> (\x.(\y.(\z.(T))))
                     parensStack--;
                 } 
                 if (string[i] == '(' || string.substr(i + 1, 3) == "Let" ||
-                string.substr(i + 1,6) == "LetRec") {
+                string.substr(i + 1, 6) == "LetRec") {
                     parensStack++;
                 }
             }
@@ -405,72 +439,16 @@ function abstractionParenthesis(string) { // \x.\y.\z.T -> (\x.(\y.(\z.(T))))
     return string;
 }
 
-function applicationParenthesis(string) {
-    if (string == null || string.length == 0) {
-        return "";
-    }
-
-    var getInner = (s, from = 0) => {
-        var start = 0;
-        var stack = 0;
-        var inside = false;
-        var i = from;
-        while (i < string.length && stack >= 0) {
-            if (string[i] == '.') {
-                start = i + 1;
-                inside = true;
-            }
-            i++;
-            if (inside && string[i] == '(') {
-                stack++; 
-            }
-            if (inside && string[i] == ')') {
-                stack--;
-            }
-        }
-             
-        console.log("inner " + s.substring(start, i));
-        return {
-            begin: start, end: i
-        };
-    }; 
-    var replace = (s, from = 0) => {
-        var bounds = getInner(string, from);
-        if (bounds.begin == bounds.end) {
-            return s;
-        } 
-        var substring = s.substring(bounds.begin, bounds.end);
-        console.log("first >" + s.substring(0, bounds.begin) + "<" );
-        console.log("sub is>" + substring + "<");
-        console.log("end   >" + s.substring(bounds.end, s.length) + "<");
-        if (substring.match(/^\(.*\)$/) || parse(substring, false)) {
-            return s; 
-        }
-        return s.substring(0, bounds.begin) +
-            "(" + substring + ")" +
-            s.substring(bounds.end, s.length);
-    };
-
-    while (replace(string) != string) {
-        string = replace(string);
-        console.log("NEXT PASS " + string);
-    }
-
-    return replace(string);
-}
-
 function preprocess(string) {
     string = string.replace(/\\/g, "λ")
                    .replace(/->/g, "→")
                    .replace(/,/g, " In Let ");
-    return applicationParenthesis(
-           abstractionParenthesis(
-           abstractionMultiple(string)));
+    return abstractionParenthesis(
+           abstractionMultiple(
+           string));
 }
 
 function parse(str, preprocessor = true) {
-    Settings.strategy = EvaluationStrategy.FULL_BETA;
-    Settings.lockStrategy = false;
     if (preprocessor) {
         str = preprocess(str);
     }
@@ -479,8 +457,19 @@ function parse(str, preprocessor = true) {
     }
     var p = new Parser(str);
     var x = p.parseTerm();
+    var other = [];
+    var o;
+    while (o = p.maybe('parseTerm')) {
+        other.push(o); 
+    }
+    var result = x;
+
+    for (var i = 0; i < other.length; i++) {
+        result = new App(result, other[i]);
+    }
+
     if (x && p.remains() == "") {
-        return x;
+        return result;
     }
 
     return null;
@@ -520,22 +509,3 @@ function slashToLambdaAlias(inputBox) {
     return false;
 }
 
-function submitOnEnter(keyEvent) {
-    if (keyEvent && keyEvent.keyCode == '13') {
-        submit();
-    }  
-}
-
-function submit() {
-    var string = document.getElementById('parserInputBox').value;
-    if (parse(string)) {
-        reset(parse(string));
-        var previousState = Settings.dropParens;
-        Settings.dropParens = false;
-        location.hash = encodeURI(TypeDiscipline.toName(Settings.discipline) +
-            currentNode.term.toDisplay());
-        Settings.dropParens = previousState;
-        document.getElementById('welcomeFrame').style.display = 'none';
-        document.getElementById('applicationFrame').style.display = 'block';
-    }
-}
