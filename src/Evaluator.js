@@ -42,7 +42,7 @@ Evaluator = {
 
     /*returns true iff exp is a partial application*/
     isPartialApplication(exp) {
-        if (getHMType(exp) == null ||
+        if (Type.getHMType(exp) == null ||
             Evaluator.getRedex.allBeta(exp).length != 0  ||
             Evaluator.getRedex.allDelta(exp).length != 0 ||
             !(exp instanceof App)) {
@@ -51,9 +51,9 @@ Evaluator = {
         var leftmostTerm = exp;
         while (leftmostTerm instanceof App) {
             var right = leftmostTerm.term2;
-            if (getHMType(right) == null ||
+            if (Type.getHMType(right) == null ||
                     Evaluator.isRedex.beta(right) ||
-                    isDeltaRedex(right)) {
+                    Evaluator.isRedex.delta(right)) {
                 return false;  
             } 
             leftmostTerm = leftmostTerm.term1;
@@ -87,14 +87,14 @@ Evaluator = {
                 return M.copy(); 
             }
             if (!E.varIsFreeIn(x, M) || !E.varIsFreeIn(M.variable, N)) {
-                return new Abs(M.variable.copy(), rec(M.term, x, N)); 
+                return new Abs(M.variable.copy(), rec(M.term, x, N), M.inputType);
             }
             if (E.varIsFreeIn(x, M) && E.varIsFreeIn(M.variable, N)) {
                 var guess = M.variable.copy().increment(); 
                 while (E.varIsFreeIn(guess, new App(M, N))) {
                     guess.increment(); 
                 }
-                return new Abs(guess, rec(rec(M.term, M.variable, guess), x, N));
+                return new Abs(guess, rec(rec(M.term, M.variable, guess), x, N), M.inputType);
             }
         }
         if (M instanceof Con) {
@@ -102,19 +102,19 @@ Evaluator = {
         }
         if (M instanceof Let) {
             var term = rec(M.desugarOnly(), x, N);
-            return Let.toLet(term, M.rec);
+            return Let.toLet(term, M.type, M.rec);
         }
         return null;
     },
 
-    /*returns a normal form if exists, loops forever otherwise*/
+    /*returns a normal form if exists, loops forever otherwise, no eta reductions*/
     getNormalForm(term, counterObject = null) {
         var e = term;
         var repeat = true;
         var c = 0;
     
         while (repeat) {
-            var r = getReductionStrategyRedex(e);
+            var r = Evaluator.getRedex.byStrategy(e);
             if (r != null) {
                 e = applyBetaDelta(e, r);
                 c++;
@@ -132,6 +132,9 @@ Evaluator = {
     toSki(term) {
         const rec = Evaluator.toSki;
         var translate = (x) => {
+            if (!(x instanceof Abstraction) || x.term == null || x.variable == null) {
+                return null;  
+            }
             if (x.term.equals(x.variable)) {
                 return OLCE.Data.aliases.getTerm("I");
             } else if (!Evaluator.varIsFreeIn(x.variable, x.term)) {
@@ -174,7 +177,7 @@ Evaluator = {
                 if (r != null) {
                     return r;
                 }
-                if (Evaluator.isRedex.beta(term) || isDeltaRedex(term)) {
+                if (Evaluator.isRedex.beta(term) || Evaluator.isRedex.delta(term)) {
                     return term;
                 }
             }
@@ -183,7 +186,7 @@ Evaluator = {
 
         /*returns a normal order redex*/
         normal(term) {
-            if (Evaluator.isRedex.beta(term) || isDeltaRedex(term)) {
+            if (Evaluator.isRedex.beta(term) || Evaluator.isRedex.delta(term)) {
                 return term;
             }
         
@@ -201,8 +204,9 @@ Evaluator = {
 
         /*returns a call-by-value redex*/
         callByValue(term) {
-            if (isDeltaRedex(term) || (Evaluator.isRedex.beta(term) &&
-                                       Evaluator.isValue(term.term2))) {
+            if (Evaluator.isRedex.sugar(term) ||
+                    Evaluator.isRedex.delta(term) ||
+                    (term instanceof App && Evaluator.isRedex.beta(term) && Evaluator.isValue(term.term2))) {
                 return term;
             }
             if (term instanceof App) {
@@ -211,9 +215,16 @@ Evaluator = {
                 }
                 return Evaluator.getRedex.callByValue(term.term1);
             }
-            if (term instanceof Let) {
+            if (term instanceof Let && !Evaluator.isRedex.sugar(term)) {
                 if (Evaluator.isValue(term.term1)) {
-                    return term;
+                    switch (OLCE.Settings.discipline) {
+                    case TypeDiscipline.UNTYPED :
+                        return term;
+                    case TypeDiscipline.SIMPLY_TYPED :
+                        return Type.getSimple(term) != null ? term : null; 
+                    case TypeDiscipline.HINDLEY_MILNER :
+                        return Type.getHMType(term) != null ? term : null;
+                    }
                 }
                 return Evaluator.getRedex.callByValue(term.term1);
             }
@@ -222,7 +233,7 @@ Evaluator = {
 
         /*returns a call-by-name redex*/
         callByName(term) {
-            if (Evaluator.isRedex.beta(term) || isDeltaRedex(term)) {
+            if (Evaluator.isRedex.beta(term) || Evaluator.isRedex.delta(term)) {
                 return term;
             }
             if (term instanceof App) {
@@ -258,11 +269,26 @@ Evaluator = {
             return redexes;
         },
 
+        /*returns a redex accorded by the selected reduction strategy*/
+        byStrategy(term) {
+            switch (OLCE.Settings.strategy) {
+            case EvaluationStrategy.FULL_BETA://fallthrough
+            case EvaluationStrategy.NORMAL_ORD:
+                return Evaluator.getRedex.normal(term);
+            case EvaluationStrategy.CALL_BY_NAME:
+                return Evaluator.getRedex.callByName(term);
+            case EvaluationStrategy.CALL_BY_VALUE:
+                return Evaluator.getRedex.callByValue(term);
+            case EvaluationStrategy.APPLICATIVE_ORD:
+                return Evaluator.getRedex.applicative(term);
+            }
+        },
+
         /*returns an array of all delta redexes*/
         allDelta(term) {
             var redexes = [];
             term.apply((t) => {
-                if (isDeltaRedex(t)) {
+                if (Evaluator.isRedex.delta(t)) {
                     redexes.push(t);
                 }
             });
@@ -272,20 +298,34 @@ Evaluator = {
 
     /*true iff terms are redex queries*/
     isRedex : {
+        sugar(exp) {
+            return exp instanceof Let &&
+                (exp.rec || OLCE.Settings.discipline == TypeDiscipline.UNTYPED);
+        },
+
         beta(exp) {
-            var check = exp instanceof Let ||
-                (exp instanceof App && exp.term1 instanceof Abs);
-        
+            if (Evaluator.isRedex.sugar(exp)) {
+                return true; 
+            }
+            var check = exp instanceof App && exp.term1 instanceof Abs;
             if (check) {
                 if (OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
                     return true;
                 }
                 if (OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
-                    return getSimpleType(exp.term2) &&
-                        getSimpleType(exp.term2).equals(exp.term1.inputType);
+                    return Type.getSimple(exp.term2) &&
+                        Type.getSimple(exp.term2).equals(exp.term1.inputType);
                 }
                 if (OLCE.Settings.discipline == TypeDiscipline.HINDLEY_MILNER) {
-                    return getHMType(exp) ? true : false;
+                    return Type.getHMType(exp) ? true : false;
+                }
+            }
+            if (exp instanceof Let && !exp.rec) {
+                if (OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
+                    return Type.getSimple(exp) != null;
+                }
+                if (OLCE.Settings.discipline == TypeDiscipline.HINDLEY_MILNER) {
+                    return Type.getHMType(exp) != null;
                 }
             }
             return false;
@@ -306,127 +346,164 @@ Evaluator = {
                     }
                 }
             }
+            if (OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
+                return check;
+            }
             return check;
         },
 
+        /* returns true iff exp is a delta redex */
+        delta(exp) {
+            if (!(exp instanceof App)) {
+                return false;
+            }
+            if (exp.term1.name == "FIX") {
+                return exp.term2 instanceof Abs &&
+                    Type.getHMType(exp.term2) instanceof FunctionType &&
+                    (OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED ?
+                        Type.getSimple(exp.term2).from.equals(Type.getSimple(exp.term2).to) :
+                        Type.unify(Type.getHMType(exp.term2).from, Type.getHMType(exp.term2).to));
+            }
+            if (exp.term1.term1 && exp.term1.term1.term1 &&
+                    exp.term1.term1.term1.name == "ITE") {
+                var cond = exp.term1.term1.term2;
+                var t1 = exp.term1.term2;
+                var t2 = exp.term2;
+                var checkTypes = Type.unify(Type.getHMType(t1), Type.getHMType(t2)) != null;
+                checkTypes = checkTypes || OLCE.Settings.discipline == TypeDiscipline.UNTYPED;
+                return cond instanceof Con && cond.type.type == "Bool" && checkTypes;
+            }
+            if (exp.term1 instanceof Con && exp.term1.arity == 1) {
+                var fType = exp.term1.type;
+                var argType = exp.term2.type;
+                if (!fType && OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
+                    return exp.term2 != null;
+                }
+                return fType instanceof FunctionType && Type.unify(fType.from, argType) != null;
+            }
+            if (exp.term1.term1 instanceof Con && exp.term1.term1.arity == 2) {
+                if (exp.term1.term1.name == "DIV" && exp.term2.name == "0") {
+                    return false;
+                }
+                var fType = exp.term1.term1.type;
+                var t1 = exp.term1.term2 instanceof Con ? exp.term1.term2.type : null;
+                var t2 = exp.term2 instanceof Con ? exp.term2.type : null;
+                if (!fType && OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
+                    return exp.term1.term2 && exp.term2;
+                }
+                return fType instanceof FunctionType && t1 && t2 ?
+                    fType.from.equals(t1) && fType.to.from.equals(t2) : false;
+            }
+            if (exp.term1 && exp.term1.term1 && exp.term1.term1.term1 &&
+                exp.term1.term1.term1 instanceof Con && exp.term1.term1.term1.arity == 3) {
+                return exp.term2 && exp.term1.term2 && exp.term1.term1.term2;
+            }
+            return false;
+        },
 
-
-
+        /*returns true iff term is a reduction strategy redex inside 'original'.
+        desugaring is always possible. */
+        byStrategy(term, original = term) {
+            if (!term) {
+                return false;
+            }
+            if (Evaluator.isRedex.sugar(term) || Evaluator.isRedex.eta(term, original)) {
+                return true;
+            }
+            switch (OLCE.Settings.strategy) {
+            case EvaluationStrategy.FULL_BETA:
+                return Evaluator.isRedex.beta(term) || Evaluator.isRedex.delta(term);
+            case EvaluationStrategy.NORMAL_ORD:
+                return Evaluator.getRedex.normal(original) === term;
+            case EvaluationStrategy.APPLICATIVE_ORD:
+                return Evaluator.getRedex.applicative(original) === term;
+            case EvaluationStrategy.CALL_BY_VALUE:
+                return Evaluator.getRedex.callByValue(original) === term;
+            case EvaluationStrategy.CALL_BY_NAME:
+                return Evaluator.getRedex.callByName(original) === term;
+            }
+        },
     },//isRedex
 
-
+    /*Creates a descriptive string of the term on the last line*/
+    info(term = OLCE.Data.derivation.getLast().term) {
+        if (term == null) {
+            return "no term";
+        }
+        if (Evaluator.isRedex.sugar(term)) {
+            return "The expression on the current line can be desugared.";
+        }
+        var disc  = OLCE.Settings.discipline;
+        var strat = OLCE.Settings.strategy;
+        var numRedexes      =  0;
+        var numDeltaRedexes =  0;
+        var numEtaRedexes   =  0;
+        if (OLCE.Settings.strategy == EvaluationStrategy.FULL_BETA) {
+            numRedexes      = Evaluator.getRedex.allBeta(term).length;
+            numDeltaRedexes = Evaluator.getRedex.allDelta(term).length;
+            numEtaRedexes   = Evaluator.getRedex.allEta(term).length;
+        } else {
+            var redex = Evaluator.getRedex.byStrategy(term);  
+            if (Evaluator.isRedex.beta(redex)) {
+                numRedexes = 1;  
+            }
+            if (Evaluator.isRedex.eta(redex)) {
+                numEtaRedexes = 1;
+            }
+            if (Evaluator.isRedex.delta(redex)) {
+                numDeltaRedexes = 1;
+            }
+        }
+        var s = "The current term ";
+        if (strat != EvaluationStrategy.FULL_BETA) {
+            numRedexes = Evaluator.getRedex.byStrategy(term) && numRedexes > 0 ? 1 : 0;
+        }
+        if (numRedexes + numDeltaRedexes == 0) {
+            if (disc == TypeDiscipline.UNTYPED) {
+                s += "is in β" + (numEtaRedexes == 0 ? "η" : "") + "-normal form";
+            } else if (disc == TypeDiscipline.SIMPLY_TYPED) {
+                var type = Type.getSimple(term);
+                s += Evaluator.isValue(term) && type ?
+                    "is in β-normal form and it’s a value of type " +
+                    "<span class='type'>" +
+                    (type ? type.write() : "[internal error]") +
+                    "</span>" :
+                    "contains no redexes, but it’s not " +
+                    "a value so it contains a type error";
+            } else {
+                var type = Type.getHMType(term);
+                s += type ? "is in β-normal form and its type is " +
+                    "<span class='type'>" + type.write() + "</span>" :
+                    "has no redexes and it is not typeable";
+            }
+        } else {
+            s += "contains ";
+        }
+        if (numRedexes > 0) {
+            s += numRedexes;
+            s += " beta-redex" + (numRedexes > 1 ? "es" : "");
+        }
+        if (numDeltaRedexes * numRedexes > 0) {
+            s += " <em>&amp;</em> ";
+        }
+        if (numDeltaRedexes > 0) {
+            s += numDeltaRedexes + " delta-redex";
+            s += numDeltaRedexes > 1 ? "es" : "";
+        }
+        if (numDeltaRedexes + numRedexes == 0 && numEtaRedexes > 0) {
+            s += ", and it can be η-reduced";
+        }
+        if (OLCE.Data.derivation.childDerivation == null &&
+            ((Evaluator.getRedex.byStrategy(term)) ||
+            numEtaRedexes > 0)
+            ) {
+            s += ". Click on a redex to reduce it";
+        }
+        return s + ".";
+    },//info
+    
 
 }//Evaluator
-
-function isDeltaRedex(exp) {
-    if (!(exp instanceof App)) {
-        return false;
-    }
-
-    //fix
-    if (exp.term1.name == "FIX") {
-        return exp.term2 instanceof Abs &&
-            getHMType(exp.term2) instanceof FunctionType &&
-            getHMType(exp.term2).from.equals(getHMType(exp.term2).to);
-    }
-
-    /* ite */
-    if (exp.term1.term1 && exp.term1.term1.term1 &&
-    exp.term1.term1.term1.name == "ITE") {
-        var cond = exp.term1.term1.term2;
-        var t1 = exp.term1.term2;
-        var t2 = exp.term2;
-
-        var checkTypes = unify(getHMType(t1), getHMType(t2)) != null;
-        checkTypes = checkTypes || OLCE.Settings.discipline == TypeDiscipline.UNTYPED;
-
-        return cond instanceof Con && cond.type.type == "Bool" && checkTypes;
-    }
-
-    /* unary fns */
-    if (exp.term1 instanceof Con && exp.term1.arity == 1) {
-        var fType = exp.term1.type;
-        var argType = exp.term2.type;
-        
-        if (!fType && OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
-            return exp.term2 != null;
-        }
-
-        return fType instanceof FunctionType && unify(fType.from, argType) != null;
-    }
-
-    /* binary functions */
-    if (exp.term1.term1 instanceof Con && exp.term1.term1.arity == 2) {
-        if (exp.term1.term1.name == "DIV" && exp.term2.name == "0") {
-            return false;
-        }
-
-        var fType = exp.term1.term1.type;
-        var t1 = exp.term1.term2 instanceof Con ? exp.term1.term2.type : null;
-        var t2 = exp.term2 instanceof Con ? exp.term2.type : null;
-
-        if (!fType && OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
-            return exp.term1.term2 && exp.term2;
-        }
-
-        return fType instanceof FunctionType && t1 && t2 ?
-            fType.from.equals(t1) && fType.to.from.equals(t2) : false;
-    }
-
-    /* ternary, only S_combinator uses this */
-    if (exp.term1 && exp.term1.term1 && exp.term1.term1.term1 &&
-        exp.term1.term1.term1 instanceof Con && exp.term1.term1.term1.arity == 3) {
-        return exp.term2 && exp.term1.term2 && exp.term1.term1.term2;
-    }
-
-    return false;
-}
-
-
-
-
-/*   returns true if term is reduction strategy redex or eta redex.
- *   the second parameter needed as eval strategy redex
- *   depends on where it is located in term                      */
-function isReductionStrategyRedex(term, original = term) {
-    var strat = OLCE.Settings.strategy;
-    if (!term) {
-        return false;
-    }
-    if (Evaluator.isRedex.eta(term, original)) {
-        return true;
-    }
-    switch (strat) {
-    case EvaluationStrategy.FULL_BETA:
-        return Evaluator.isRedex.beta(term) || isDeltaRedex(term);
-    case EvaluationStrategy.NORMAL_ORD:
-        return Evaluator.getRedex.normal(original) === term;
-    case EvaluationStrategy.APPLICATIVE_ORD:
-        return Evaluator.getRedex.applicative(original) === term;
-    case EvaluationStrategy.CALL_BY_VALUE:
-        return Evaluator.getRedex.callByValue(original) === term;
-    case EvaluationStrategy.CALL_BY_NAME:
-        return Evaluator.getRedex.callByName(original) === term;
-    }
-}
-
-
-
-
-function getReductionStrategyRedex(term) {
-    switch (OLCE.Settings.strategy) {
-    case EvaluationStrategy.FULL_BETA://fallthrough
-    case EvaluationStrategy.NORMAL_ORD:
-        return Evaluator.getRedex.normal(term);
-    case EvaluationStrategy.CALL_BY_NAME:
-        return Evaluator.getRedex.callByName(term);
-    case EvaluationStrategy.CALL_BY_VALUE:
-        return Evaluator.getRedex.callByValue(term);
-    case EvaluationStrategy.APPLICATIVE_ORD:
-        return Evaluator.getRedex.applicative(term);
-    }
-}
-
 
 
 function applyBetaDelta(term, redex, rArrow = null) {
@@ -448,7 +525,7 @@ function applyBetaDelta(term, redex, rArrow = null) {
     } else if (term instanceof App) {
         if (term === redex && Evaluator.isRedex.beta(term)) {
             return Evaluator.applyBetaStep(term);
-        } else if (term === redex && isDeltaRedex(term)) {
+        } else if (term === redex && Evaluator.isRedex.delta(term)) {
             if (rArrow) {
                 rArrow.arrow = Arrow.DELTA;
             }
@@ -458,7 +535,7 @@ function applyBetaDelta(term, redex, rArrow = null) {
     } else if (term instanceof Primitive) {
         return term.copy();
     } else if (term instanceof Let) {
-        if (term == redex && OLCE.Settings.discipline == TypeDiscipline.UNTYPED) {
+        if (Evaluator.isRedex.sugar(term)) {
             if (rArrow) {
                 rArrow.arrow = Arrow.EQ;
             }
@@ -468,69 +545,10 @@ function applyBetaDelta(term, redex, rArrow = null) {
             if (rArrow) {
                 rArrow.arrow = Arrow.BETA;
             }
-            return Evaluator.applyBetaStep(term.desugar());
+            return Evaluator.applyBetaStep(term.desugarOnly());
         }
-        return new Let(rec(term.variable), rec(term.term1), rec(term.term2), [], term.rec);
+        return new Let(rec(term.variable), rec(term.term1), rec(term.term2), term.type, term.rec);
     }
 }
 
 
-function info(term = OLCE.Data.derivation.getLast().term) {
-    if (term == null) {
-        return "no term";
-    }
-    var disc  = OLCE.Settings.discipline;
-    var strat = OLCE.Settings.strategy;
-    var numRedexes      = Evaluator.getRedex.allBeta(term).length;
-    var numDeltaRedexes = Evaluator.getRedex.allDelta(term).length;
-    var numEtaRedexes   = Evaluator.getRedex.allEta(term).length;
-    var s = "The current term ";
-
-    if (strat != EvaluationStrategy.FULL_BETA) {
-        numRedexes = getReductionStrategyRedex(term) && numRedexes > 0 ? 1 : 0;
-    }
-    if (numRedexes + numDeltaRedexes == 0) {
-        if (disc == TypeDiscipline.UNTYPED) {
-            s += "is in β" + (numEtaRedexes == 0 ? "η" : "") + "-normal form";
-        } else if (disc == TypeDiscipline.SIMPLY_TYPED) {
-            var type = getSimpleType(term);
-            s += Evaluator.isValue(term) && type ?
-                "is in β-normal form and it’s a value of type " +
-                "<span class='type'>" +
-                (type ? type.write() : "[internal error]") +
-                "</span>" :
-                "contains no redexes, but it’s not " +
-                "a value so it contains a type error";
-        } else {
-            var type = getHMType(term);
-            s += type ? "is in β-normal form and its type is " +
-                "<span class='type'>" + type.write() + "</span>" :
-                "has no redexes and it is not typeable";
-        }
-    } else {
-        s += "contains ";
-    }
-    if (numRedexes > 0) {
-        if (strat == EvaluationStrategy.FULL_BETA) {
-            s += numRedexes;
-        }
-        s += " beta-redex" + (numRedexes > 1 ? "es" : "");
-    }
-    if (numDeltaRedexes * numRedexes > 0) {
-        s += " <em>&amp;</em> ";
-    }
-    if (numDeltaRedexes > 0) {
-        s += numDeltaRedexes + " delta-redex";
-        s += numDeltaRedexes > 1 ? "es" : "";
-    }
-    if (numDeltaRedexes + numRedexes == 0 && numEtaRedexes > 0) {
-        s += ", and it can be η-reduced";
-    }
-    if (OLCE.Data.derivation.childDerivation == null &&
-        ((getReductionStrategyRedex(term)) ||
-        numEtaRedexes > 0)
-        ) {
-        s += ". Click on a redex to reduce it";
-    }
-    return s + ".";
-}

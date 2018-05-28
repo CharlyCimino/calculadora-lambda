@@ -5,7 +5,7 @@ class Environment {
         this.aliases = [];
     }
 
-    /*adds a new alias*/
+    /* adds a new alias*/
     addAlias(name, term, userDefined = false, simplyTypedOnly = false) {
         var alias = new Alias(name, term, userDefined, simplyTypedOnly);
         if (!this.containsName(name)) {
@@ -13,7 +13,7 @@ class Environment {
         }
     }
 
-    /*returns an alias name of a term*/
+    /* returns an alias name of a term*/
     getName(term) {
         for (var i = 0; i < this.aliases.length; i++) {
             if (this.aliases[i].term.equals(term)) {
@@ -23,7 +23,20 @@ class Environment {
         return Alias.fromNumeral(term);
     }
 
-    /*returns a term of a given alias-name, works for numerals too*/
+    /* returns an alias obejct by name*/
+    getAliasByName(name) {
+        for (var i = 0; i < this.aliases.length; i++) {
+            if (this.aliases[i].name == name) {
+                return this.aliases[i]; 
+            }
+        }  
+        if (!isNaN(name)) {
+            return new Alias(name, Alias.toNumeral(parseInt(name, 10)));
+        }
+        return null;
+    }
+
+    /* returns a term of a given alias-name, works for numerals too*/
     getTerm(name) {
         for (var i = 0; i < this.aliases.length; i++) {
             if (this.aliases[i].name == name) {
@@ -36,7 +49,7 @@ class Environment {
         return null;
     }
 
-    /*returns true iff Env contains a given term*/
+    /* returns true iff Env contains a given term*/
     containsTerm(term) {
         for (var i = 0; i < this.aliases.length; i++) {
             if (this.aliases[i].term.equals(term)) {
@@ -47,7 +60,7 @@ class Environment {
         return Alias.fromNumeral(term) != null;
     }
 
-    /*returns true iff Env contains some alias under a given name*/
+    /* returns true iff Env contains some alias under a given name*/
     containsName(name) {
         if (name == "") {
             return false;
@@ -62,7 +75,7 @@ class Environment {
     }
 }
 
-/*associating a term and a name*/
+/* associating a term and a name*/
 class Alias {
     constructor(name, term, userDefined = false, simpleTypedOnly = false) {
         this.name = name;
@@ -77,7 +90,7 @@ class Alias {
             this.term.equals(other.term);
     }
 
-    /*converts an integer into Church-encoded numeral*/
+    /* converts an integer into Church-encoded numeral*/
     static toNumeral(number) {
         if (typeof(number) != 'number' || number < 0) {
             return null;
@@ -92,7 +105,7 @@ class Alias {
         return new Abs(new Var('f'), new Abs(new Var('x'), internal));
     }
 
-    /*converts a Church encoded numeral term to integer*/
+    /* converts a Church encoded numeral term to integer*/
     static fromNumeral(term) {
         if (!term) {
             return null;

@@ -18,9 +18,18 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
         derivation : new Derivation(),
     },
 
-    /*redraws derivation tree*/
-    refreshTree() {
-        OLCE.DOM.evaluationFrame.innerHTML = OLCE.Data.derivation.toHtml();
+    /* redraws derivation tree, 'fullRefresh' redraws whole tree, 
+       otherwise optimized version will occur, where only the bottom of
+       the derivation chain is changed */
+    refreshTree(fullRefresh = true) {
+        if (fullRefresh) {
+            OLCE.DOM.evaluationFrame.innerHTML = OLCE.Data.derivation.toHtml();
+        } else {
+            var n = OLCE.Data.derivation.getNumberOfLines();
+            var d = OLCE.Data.derivation.getLineByNumber(n - 2);
+            OLCE.DOM.removeLastNode();
+            OLCE.DOM.evaluationFrame.insertAdjacentHTML('beforeend', d.toHtml(n - 2));
+        }
     },
 
     /*sets the URL to point to the current term*/
@@ -43,10 +52,12 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
         OLCE.refresh();
     },
 
-    /*refreshes screen. 'count' argument is a number of evaluation steps taken*/
-    refresh(count = 0) {
+    /*refreshes screen. 'count' argument is a number of evaluation steps taken
+      if 'fullRefresh' is true, whole derivation tree will be redrawn, otherwise,
+      only the last element will be appended */
+    refresh(count = 0, fullRefresh = true) {
         OLCE.refreshURL();
-        OLCE.refreshTree();
+        OLCE.refreshTree(fullRefresh);
         OLCE.refreshBottomPanel(count);
         OLCE.refreshTopPanel();
         OLCE.DOM.preferAliasFrame.innerHTML =
@@ -61,7 +72,7 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
     /*refreshes bottom panel, 'count' argument is a number of eval. steps taken*/
     refreshBottomPanel(count = 0) {
         OLCE.DOM.infoFrame.innerHTML = count > 0 ?
-            "<em>" + count + " steps later</em>—" + info() : info();
+            "<em>" + count + " steps later</em>—" + Evaluator.info() : Evaluator.info();
         OLCE.DOM.disciplineFrame.innerHTML = OLCE.Settings.discipline;
     },
 
@@ -75,7 +86,7 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
     /*appends a new reduced term to a given node*/
     reduceInDerivation(redex, current = OLCE.Data.derivation.getLast()) {
         var rArrow = { arrow : Arrow.BETA };
-        if (isReductionStrategyRedex(redex, current.term)) {
+        if (Evaluator.isRedex.byStrategy(redex, current.term)) {
             var newTerm = applyBetaDelta(current.term, redex, rArrow);
             current.addChildTerm(newTerm, rArrow.arrow);
         }
@@ -86,8 +97,8 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
         /*parses user input and enters main screen*/
         submit() {
             var string = document.getElementById('parserInputBox').value;
-            if (parse(string)) {
-                OLCE.reset(parse(string));
+            if (Parser.parse(string)) {
+                OLCE.reset(Parser.parse(string));
                 OLCE.refreshURL();
                 OLCE.DOM.initialScreen.style.display = 'none';
                 OLCE.DOM.mainScreen.style.display = 'block';
@@ -170,7 +181,7 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
             }
             tag.style.boxShadow = 'inset 0px 0px 0px white, inset 0px -6px 0px #bcc3d0'
             var inputBox = document.getElementById('parserInputBox');
-            slashToLambdaWelcome(inputBox);
+            OLCE.UI.slashToLambdaWelcome(inputBox);
             inputBox.focus();
         },
 
@@ -224,9 +235,9 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
 
         /*accepts a new user-defined alias, triggered by click on the 'accept' button*/
         acceptNewAlias() {
-            if (OLCE.UI.sanitizeAliasName() && slashToLambdaAlias(OLCE.DOM.aliasTermInput)) {
+            if (OLCE.UI.sanitizeAliasName() && OLCE.UI.slashToLambdaAlias(OLCE.DOM.aliasTermInput)) {
                 OLCE.Data.aliases.addAlias(OLCE.DOM.aliasNameInputBox.value,
-                       parse(OLCE.DOM.aliasTermInput.value), true,
+                       Parser.parse(OLCE.DOM.aliasTermInput.value), true,
                        OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED);
                 OLCE.UI.cancelAliasClick();
                 OLCE.refresh();
@@ -284,7 +295,7 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
             var counter  = { count: 0 };
             while (repeat) {
                 c++;
-                var redex = getReductionStrategyRedex(lastDerivation.term);
+                var redex = Evaluator.getRedex.byStrategy(lastDerivation.term);
                 if (redex) {
                     OLCE.reduceInDerivation(redex, lastDerivation);
                     if (lastDerivation.term.equals(lastDerivation.childDerivation.term)) {
@@ -371,39 +382,43 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
             OLCE.UI.cancelAliasClick();
         },
 
-        /*fill in the current term into alias addition box*/
+        /* fill in the current term into alias addition box */
         aliasUseCurrent() {
             var state = OLCE.Settings.dropParens;
             OLCE.Settings.dropParens = false;
             OLCE.DOM.aliasTermInput.value = OLCE.Data.derivation
                                                 .getLast().term.toDisplay();
             OLCE.Settings.dropParens = state;
-            slashToLambdaAlias(OLCE.DOM.aliasTermInput);
+            OLCE.UI.slashToLambdaAlias(OLCE.DOM.aliasTermInput);
         },
 
-        /*displays alias addition dialog box*/
+        /* displays alias addition dialog box */
         aliasAddition() {
             OLCE.UI.cancelAliasClick();
             OLCE.DOM.settingsMenu.style.display = 'none';
             OLCE.DOM.aliasWindow.style.display = 'block';
             OLCE.UI.sanitizeAliasName();
-            slashToLambdaAlias(OLCE.DOM.aliasTermInput);
+            OLCE.UI.slashToLambdaAlias(OLCE.DOM.aliasTermInput);
         },
 
-        /*reduces the clicked term. triggered by term-click, parameter is code of the clicked term*/
+        /* reduces the clicked term. triggered by term-click,
+           parameter is code of the clicked term */
         clickReduce(code) {
             var redex = OLCE.Data.derivation.codeToTerm(code, true);
             var codes = (code + "").match(/(.*)\.(.*)/);
             var rArrow = { arrow : Arrow.BETA };
+            var fullRefresh = OLCE.Data.derivation.getNumberOfLines() - 1 != codes[1];
             var currentLine = OLCE.Data.derivation.getLineByNumber(codes[1]);
-            var newTerm = applyBetaDelta(OLCE.Data.derivation.getLineByNumber(codes[1]).term, redex, rArrow);
+            var newTerm = applyBetaDelta(OLCE.Data
+                                             .derivation
+                                             .getLineByNumber(codes[1]).term, redex, rArrow);
             if (newTerm) {
                 currentLine.addChildTerm(newTerm, rArrow.arrow);
+                OLCE.refresh(0, fullRefresh);
             }
-            OLCE.refresh();
         },
 
-        /*sanitizes the string for alias name, triggered by inputbox keystroke*/
+        /* sanitizes the string for alias name, triggered by inputbox keystroke */
         sanitizeAliasName() {
             let inputBox = OLCE.DOM.aliasNameInputBox;
             inputBox.value = inputBox.value.toUpperCase()
@@ -442,11 +457,46 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
                     obj.style.display = 'none';
                 }
             }
-
             for (var i = 0; i < obj.children.length; i++) {
                 OLCE.UI.appearAliases(obj.children[i], show);
             }
         },
+
+		/* replaces slashes with lambdas, creates arrows, changes cursor
+           position appropriatelly, returns true iff text can be parsed */
+		slashToLambda(inputBox) {
+		    var before = inputBox.selectionStart;
+		    var withArrow = inputBox.value.replace(/->/g, "→");
+		    if (withArrow != inputBox.value) {
+		        inputBox.value = withArrow;
+		        before--;
+		    }
+		    inputBox.value = inputBox.value.replace(/\\/g, "λ")
+		    inputBox.selectionStart = before;
+		    inputBox.selectionEnd = before;
+		    return Parser.parse(inputBox.value) != null;
+		},
+
+		/* changes style of the main input box, triggered by keystroke */
+		slashToLambdaWelcome(inputBox) {
+		    if (OLCE.UI.slashToLambda(inputBox)) {
+		        inputBox.style.outlineColor = "#8bbb8d";
+		    } else {
+		        inputBox.style.outlineColor = "#e08888";
+		    }
+		},
+
+		/* changes style of the alias input box */
+		slashToLambdaAlias(inputBox) {
+		    if (OLCE.UI.slashToLambda(inputBox)) {
+		        inputBox.style.borderBottomColor = "#8bbb8d";
+		        return true;
+		    } else {
+		        inputBox.style.borderBottomColor = "#e08888"; 
+		    }
+		    return false;
+		},
+
     },//UI
 
     /*dom element variables*/
@@ -468,6 +518,11 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
         aliasNameInputBox : null,
         aliasTermInput    : null,
         userInputBox      : null,
+        /*removes last node -- the current term*/
+        removeLastNode() {
+            var nodes = OLCE.DOM.evaluationFrame.childNodes;
+            OLCE.DOM.evaluationFrame.removeChild(nodes[nodes.length - 1]); 
+        },
         /*runs on page load, associates variables with DOM objects, loads URL term*/
         prepare() {
             OLCE.DOM.evaluationFrame   = document.getElementById('evaluationFrame');
@@ -492,9 +547,10 @@ OLCE = { /*Online  Lambda  Calculus  Evaluator*/
             OLCE.DOM.preferAliasFrame.innerHTML = OLCE.Settings.preferConstants ? "yes" : "no";
             OLCE.DOM.strategyMenu.style.display = 'none';
             OLCE.DOM.settingsMenu.style.display = 'none';
-            slashToLambdaAlias(OLCE.DOM.aliasTermInput);
+            OLCE.UI.slashToLambdaAlias(OLCE.DOM.aliasTermInput);
             OLCE.UI.sanitizeAliasName();
-            addUntypedMacros();
+
+            Constant.addConstantsAndAliases();
             OLCE.UI.disciplineClick('UNTYPED');
             OLCE.DOM.userInputBox.onkeydown = OLCE.UI.submitOnEnter;
 

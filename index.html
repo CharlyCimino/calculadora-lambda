@@ -35,7 +35,7 @@
                 </div>
                 <!-- user input box and the submit button beneath -->
                 <div>
-                    <input spellcheck='false' id='parserInputBox' type='text' oninput='slashToLambdaWelcome(this)'>
+                    <input spellcheck='false' id='parserInputBox' type='text' oninput='OLCE.UI.slashToLambdaWelcome(this)'>
                     <div id='submitButton'><span class='option' onclick='OLCE.UI.submit()'>Submit</span></div>
                 </div>
                 <!-- prefer constant selection menu below the input box -->
@@ -53,7 +53,7 @@
             <!-- options on the head panel on the initial screen -->
             <div id='welcomeOptions'>
                 <div id='initialMenuOptions'>
-                    <span><a href='help.html#examples'>EXAMPLES</a></span> |
+                    <span><a href='help.html#examples' target='_blank'>EXAMPLES</a></span> |
                     <span><a href='help.html' target='_blank'>HELP</a></span> |
                     <label for='fileInputBox'><span class='option'>IMPORT DERIVATION FROM A FILE</span></label> |
                     <label for='fileInputBoxAliases'><span class='option' id='importAliasesButton'>IMPORT ALIASES FROM A FILE</span></label>
@@ -81,7 +81,7 @@
                 <div id='aliasHeader'>Add an alias</div>
                 <div id='lines'>
                     <input spellcheck='false' oninput='OLCE.UI.sanitizeAliasName()' placeholder='NAME' type='text' class='lineInput' id='aliasNameInput'> =
-                    <input spellcheck='false' oninput='slashToLambdaAlias(this)' placeholder='λsome.term' type='text' class='lineInput' id='aliasTermInput'>
+                    <input spellcheck='false' oninput='OLCE.UI.slashToLambdaAlias(this)' placeholder='λsome.term' type='text' class='lineInput' id='aliasTermInput'>
                 </div>
                 <div id='aliasButtons'>
                     <span class='option aliasButt'><a href='help.html#aliases_primitives' target='_blank'>Help</a></span>
@@ -98,6 +98,7 @@
         <!-- the main screen, evaluation happens here -->
         <div id='mainScreen'>
             <div id='headPanel'>
+                <!-- the head navigation bar of the main screen -->
                 <div id='main' class='menu'>
                     <span onclick='OLCE.UI.backToInitialScreen()' class='option'>New/modify term</span> |
                     <span class='option'><a href='help.html' target='_blank'>Help</a></span> |
@@ -106,6 +107,7 @@
                     <span onclick='OLCE.UI.toggleSetting("expandMacros")' class='option'>Expand&nbsp;aliases:&nbsp;<span id='macroFrame'>Maybe</span></span> |
                     <span onclick='OLCE.UI.toggleSetting("dropParens")' class='option'>Shorthand&nbsp;form:&nbsp;<span id='shorthandFrame'>Probably</span></span>
                 </div>
+                <!-- the drop-down menu for evaluation strategy choice -->
                 <div id='strategyMenu' class='menu'>
                     <span onclick='OLCE.UI.setStrategy("FULL_BETA")' class='option'>Full beta reduction</span> |
                     <span onclick='OLCE.UI.setStrategy("NORMAL_ORD")' class='option'>Normal order</span> |
@@ -113,6 +115,7 @@
                     <span onclick='OLCE.UI.setStrategy("APPLICATIVE_ORD")' class='option'>Applicative order</span> |
                     <span onclick='OLCE.UI.setStrategy("CALL_BY_VALUE")' class='option'>Call by value</span>
                 </div>
+                <!-- the drop-down menu for options: alias addition, io, ski -->
                 <div id='settingMenu' class='menu'>
                     <span onclick='OLCE.UI.aliasAddition()' class='option'>Add a new alias</span> |
                     <span onclick='OLCE.UI.showIo()' class='option'>Import/Export</span> |

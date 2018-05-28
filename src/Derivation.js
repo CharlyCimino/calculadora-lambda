@@ -25,7 +25,7 @@ const Arrow = {
         default: return "";}},
 };
 
-/*linked-list for derivation chain*/
+/* linked-list for derivation chain */
 class Derivation {
     constructor(term = null) {
         this.term             = term;
@@ -33,7 +33,7 @@ class Derivation {
         this.childDerivation  = null;
     }
 
-    /*adds new term*/
+    /* adds new term */
     addChildTerm(term, arrow = null) {
         var newDerivation = new Derivation(term);
         newDerivation.arrow = arrow;
@@ -41,8 +41,11 @@ class Derivation {
         return true;
     }
 
-    /*returns final html code of the derivation*/
-    toHtml() {
+    /* returns final html code of the derivation 
+       'lineOffset' is a number determining the start
+       of encoded line number. useful when
+       appending generated html to existing one */
+    toHtml(lineOffset = 0) {
         if (this.term == null) {
             return "";
         }
@@ -50,9 +53,9 @@ class Derivation {
         var evalAtOnce = "<div onclick='OLCE.UI.evaluateAtOnce()' " +
                          "class='arrow' id='evalButton'>→*</div>";
         var s = ""; 
-        var termNumber = 0;
+        var termNumber = lineOffset;
         while (currentDerivation) {
-            var hasRedex = getReductionStrategyRedex(currentDerivation.term) != null;
+            var hasRedex = Evaluator.getRedex.byStrategy(currentDerivation.term) != null;
             var arrow = currentDerivation.arrow;  
             arrow = arrow == null ? "&nbsp;" : arrow;
             s += "<div class='nodebox'><div class='arrow'>" + arrow + "</div>" +
@@ -64,11 +67,10 @@ class Derivation {
             currentDerivation = currentDerivation.childDerivation;
             termNumber++;
         }
-
         return s;
     }
 
-    /*returns string of latex source code of the derivation*/
+    /* returns string of latex source code of the derivation */
     toLatex() {
         var node = this;
         var warning = "% don't forget to \\usepackage{amsmath}\n";
@@ -85,7 +87,7 @@ class Derivation {
         return warning + "\\begin{align*}\n" + result + "\n\\end{align*}";
     } 
 
-    /*downloads a file of the derivation*/
+    /* downloads a file of the derivation */
 	toFile() {
 	    let aliases = OLCE.Data.aliases.aliases;
 	    var state = OLCE.Settings.dropParens;
@@ -98,18 +100,16 @@ class Derivation {
 	                      aliases[i].term.toDisplay() + "\n";
 	        }
 	    }
-
 	    while (currentDerivation != null) {
 	        result += "term " + Arrow.toName(currentDerivation.arrow) +
 	            " " + currentDerivation.term.toDisplay() + "\n";
 	        currentDerivation = currentDerivation.childDerivation;
 	    }
-	    
 	    OLCE.Settings.dropParens = state;
 		return Derivation.downloadFile(result);
 	}
 
-    /*returns a particular term from string encoding*/
+    /* returns a particular term from string encoding */
     codeToTerm(code, returnRedex = false) {
         var codes = (code + "").match(/(.*)\.(.*)/);
         if (!codes) {
@@ -119,7 +119,7 @@ class Derivation {
         return node.term.fromCode(codes[2], returnRedex);
     }
 
-    /*gets particular term by number*/
+    /* gets particular term by number */
     getLineByNumber(n) {
         var node = this;
         while (node && n > 0) {
@@ -129,7 +129,18 @@ class Derivation {
         return node;
     }
 
-    /*returns the last (the current) term*/ 
+    /* returns a number of derivation (list length) */
+    getNumberOfLines() {
+        var node = this;
+        var n = 0;
+        while (node) {
+            node = node.childDerivation;
+            n++;
+        }
+        return n;
+    }
+
+    /* returns the last (the current) term */ 
     getLast() {
         var node = this;
         while (node.childDerivation) {
@@ -138,7 +149,7 @@ class Derivation {
         return node;
     }
 
-    /*utility function for file download, input is a string to be downloaded*/
+    /* utility function for file download, input is a string to be downloaded */
     static downloadFile(text, filename = "save.lambda") {
         var el = document.createElement("a");
         el.setAttribute("href", "data:text/plain;charset=utf-8," +
@@ -175,9 +186,7 @@ class Derivation {
             OLCE.Settings.preferConstants = constantPreferenceBefore;
             OLCE.Settings.discipline = disciplineBefore;
         };
-
         OLCE.Settings.preferConstants = true;
-
         for (var i = 0; i < lines.length; i++) {
             if (lines[i].trim().match(/^term/)) {
                 var tokens = lines[i].match(/^\s*term\s+([A-Z]+)\s+(.+)/);
@@ -185,7 +194,7 @@ class Derivation {
                     reset();
                     return null;
                 }
-                var term = parse(tokens[2]);
+                var term = Parser.parse(tokens[2]);
                 if (current.term == null) {
                     current.term = term;
                     current.arrow = Arrow[tokens[1]];
@@ -204,7 +213,7 @@ class Derivation {
                     reset();
                     return null;
                 }
-                var term = parse(tokens[2]);
+                var term = Parser.parse(tokens[2]);
                 if (term == null) {
                     reset();
                     return null;
@@ -219,7 +228,6 @@ class Derivation {
                 OLCE.Settings.discipline = TypeDiscipline[tokens[1]];
             }
         }
-
         reset();
         return { derivation: newTree,
                  discipline: disc,

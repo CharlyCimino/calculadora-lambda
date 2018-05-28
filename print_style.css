@@ -3,6 +3,7 @@ body {
     width: 297mm;
     background: none;
     font-size: 16pt;
+    padding-right: 2.4cm;
 }
 
 #evalButton, #headPanel, #bottomPanel {

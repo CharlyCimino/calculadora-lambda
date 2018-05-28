@@ -4,20 +4,22 @@ class Variable {
         this.vardata = v;
     }
 
+    /* returns true iff other term is syntactically identical*/
     equals(other) {
         return other instanceof Var && other.vardata === this.vardata;
     }
 
+    /* returns indentical term */
     copy() {
         return new Var(this.vardata);
     }
 
-    /*returns Term as string, uses user display settins*/
+    /* returns Term as string, uses user display settins */
     toDisplay() {
         return this.vardata;
     }
 
-    /*returns Term as latex source, uses user display settings*/
+    /* returns Term as latex source, uses user display settings */
     toLatex() {
         var character = this.vardata[0];
         var number    = this.vardata.match(/[a-z]*([0-9]+)/);
@@ -27,7 +29,7 @@ class Variable {
         return number ? character + "_{" + number[1] + "}" : character;
     }
 
-    /*returns Term as HTML source, uses user display settings*/
+    /* returns Term as HTML source, uses user display settings */
     toHtml(depth = "0.") {
         var env = OLCE.Data.aliases;
         var stringPart = this.vardata[0];
@@ -47,7 +49,7 @@ class Variable {
             HtmlLiteral.end : "");
     }
 
-    /*Variable specific -- increments: x-> x_1, x_n -> x_(n+1)*/
+    /* Variable specific -- increments: x-> x_1, x_n -> x_(n+1) */
     increment() {
         var stringPart = this.vardata[0];
         var numPart;
@@ -60,17 +62,17 @@ class Variable {
         return this;
     }
 
-    /*returns an array of free variables of a Term*/
+    /* returns an array of free variables of a Term */
     freeVars() {
         return [this];
     }
 
-    /*returns a sub-term based on a string encoding*/
+    /* returns a sub-term based on a string encoding */
     fromCode(code, returnRedex = false, redex = null, original = this) {
         return returnRedex ? redex : null;
     }
 
-    /*applies a function to every subterm (pre-order)*/
+    /* applies a function to every subterm (pre-order) */
     apply(fn) {
         fn(this);   
     }
@@ -117,22 +119,22 @@ class Application {
 
     toHtml(depth = "0.", originalTerm = this, dropParens = true) {
         var env = OLCE.Data.aliases;
-        var red = (a) => isReductionStrategyRedex(this, originalTerm) ? a : "";
+        var red = (a) => Evaluator.isRedex.byStrategy(this, originalTerm) ? a : "";
 
         var childApp = this.term1 instanceof App;
         dropParens = dropParens && OLCE.Settings.dropParens;
 
         return (env.containsTerm(this) ? HtmlLiteral.hasAlias : "") +
-            red(isDeltaRedex(this) ? "<span class='deltaRedex'>" :
+            red(Evaluator.isRedex.delta(this) ? "<span class='deltaRedex'>" :
                                      "<span class='redex'>") +
             (dropParens ? "" : HtmlLiteral.combine("(", depth)) +
-            red(isDeltaRedex(this) ? "" : "<span class='redA'>") +
+            red(Evaluator.isRedex.delta(this) ? "" : "<span class='redA'>") +
             this.term1.toHtml(depth + "0", originalTerm, childApp) +
-            red(isDeltaRedex(this) ? "" : HtmlLiteral.end) +
+            red(Evaluator.isRedex.delta(this) ? "" : HtmlLiteral.end) +
             HtmlLiteral.combine(" ", depth) +
-            red(isDeltaRedex(this) ? "" : "<span class='redB'>") +
+            red(Evaluator.isRedex.delta(this) ? "" : "<span class='redB'>") +
             this.term2.toHtml(depth + "1", originalTerm, false) +
-            red(isDeltaRedex(this) ? "" : HtmlLiteral.end) +
+            red(Evaluator.isRedex.delta(this) ? "" : HtmlLiteral.end) +
             (dropParens ? "" : HtmlLiteral.combine(")", depth)) +
             red(HtmlLiteral.end) +
             (env.containsTerm(this) ? HtmlLiteral.end + HtmlLiteral.isAlias +
@@ -144,7 +146,7 @@ class Application {
     }
 
     fromCode(code, returnRedex = false, redex = null, original = this) {
-        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        redex = Evaluator.isRedex.byStrategy(this, original) ? this : redex;
         if (code == "") {
             return returnRedex ? redex : this;
         } 
@@ -211,8 +213,8 @@ class Abstraction {
 
 		return (dropParens ? "" : "(") + (dropLambda ? "" : "\\lambda ") +
 			this.variable.toLatex() +
-			(this.inputType !== null ? ":\\mathrm{" +
-                this.inputType.write().replace(/→/g, "\\to") + "}": "") +
+			(this.inputType !== null ? "{:}\\text{\\small$\\mathrm{" +
+                this.inputType.write().replace(/→/g, "\\to") + "}$}": "") +
 			(dropDot ? "" : ".") + this.term.toLatex(true, kidDropLam) +
 			(dropParens ? "" : ")");
 	}
@@ -228,18 +230,17 @@ class Abstraction {
         dropParens = dropParens && permission;
         dropLam = dropLam && permission && this.inputType == null;
 
-        return (isReductionStrategyRedex(this, originalTerm) ? "<span class='termLetRedex'>" : "") +
+        return (Evaluator.isRedex.byStrategy(this, originalTerm) ? "<span class='termLetRedex'>" : "") +
             (env.containsTerm(this) ? HtmlLiteral.hasAlias : "") +
             HtmlLiteral.combine((dropParens ? "" : "(") +
             (dropLam ? "" : "λ"), depth) + this.variable.toHtml(depth + "0") +
-            HtmlLiteral.combine(HtmlLiteral.type(this, depth) +
-			(kidDropLam ? "" : "."), depth) +
+            HtmlLiteral.combine(HtmlLiteral.type(this.inputType, depth) + (kidDropLam ? "" : "."), depth) +
             this.term.toHtml(depth + "1", originalTerm, true, kidDropLam) +
             (dropParens ? "" : HtmlLiteral.combine(")" , depth)) +
             (env.containsTerm(this) ? HtmlLiteral.end +
             HtmlLiteral.isAlias + env.getName(this) +
             HtmlLiteral.end : "") +
-            (isReductionStrategyRedex(this, originalTerm) ? HtmlLiteral.end : "");
+            (Evaluator.isRedex.byStrategy(this, originalTerm) ? HtmlLiteral.end : "");
     }
 
     freeVars() {
@@ -254,7 +255,7 @@ class Abstraction {
     }
 
     fromCode(code, returnRedex = false, redex = null, original = this) {
-        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        redex = Evaluator.isRedex.byStrategy(this, original) ? this : redex;
         if (code == "") {
             return returnRedex ? redex : this;
         }
@@ -271,11 +272,11 @@ class Abstraction {
 }
 
 class Let {
-    constructor(v, t1, t2, args = [], r = false) {
+    constructor(v, t1, t2, type = null, r = false) {
         this.variable = v;
         this.term1    = t1;
         this.term2    = t2;
-        this.args     = args;
+        this.type     = type;
         this.rec      = r;
     }
 
@@ -292,12 +293,16 @@ class Let {
         var a = this.term1.copy();
         var b = this.term2.copy();
 
-        return new Let(v, a, b, [], this.rec);
+        return new Let(v, a, b, this.type.copy(), this.rec);
     }
 
     toDisplay() {
+        var type = "";
+        if (this.type != null) {
+            type = ":" + this.type.write();
+        }
         return "Let" + (this.rec ? "Rec " : " ") +
-            this.variable.toDisplay() + " = " +
+            this.variable.toDisplay() + type + " = " +
             this.term1.toDisplay() + " In " +
             this.term2.toDisplay();
     }
@@ -306,9 +311,12 @@ class Let {
 		if (OLCE.Data.aliases.containsTerm(this) && OLCE.Settings.expandMacros) {
 			return "\\mathrm{" + OLCE.Data.aliases.getName(this) + "}";
 		}
-
+        var type = "";
+        if (this.type != null) {
+            type = ":\\mathrm{" + this.type.write().replace(/→/g, "\\to") + "}";
+        }
 		return "\\mathit{Let" + (this.rec ? " Rec}\\;" : "}\\;") +
-			this.variable.toLatex() + " = " +
+			this.variable.toLatex() + type + " = " +
 			this.term1.toLatex() + "\\;\\mathit{In}\\;" +
 			this.term2.toLatex();
 	}
@@ -317,21 +325,24 @@ class Let {
         var letV = this.rec ? "LetRec " : "Let ";
         var varString = this.variable.toHtml(depth, originalTerm);
         var termNoAbs = this.term1;
+		var type = this.type != null ?
+            HtmlLiteral.combine(HtmlLiteral.type(this.type, depth), depth) : "";
 
-        while (termNoAbs instanceof Abs) {
+        while (termNoAbs instanceof Abs &&
+                OLCE.Settings.discipline != TypeDiscipline.SIMPLY_TYPED) {
             varString += HtmlLiteral.combine(" ", depth) +
             termNoAbs.variable.toHtml(depth, originalTerm);
             termNoAbs = termNoAbs.term;
         }
 
-        return (isReductionStrategyRedex(this, originalTerm) ?
+        return (Evaluator.isRedex.byStrategy(this, originalTerm) ?
             "<span class='termLetRedex'>" : "") +
             HtmlLiteral.combine(HtmlLiteral.lets(letV), depth) +
-            varString + HtmlLiteral.combine(" = ", depth) +
+            varString + type + HtmlLiteral.combine(" = ", depth) +
             termNoAbs.toHtml(depth + "0", originalTerm) +
             HtmlLiteral.combine(HtmlLiteral.lets(" In "), depth) +
             this.term2.toHtml(depth + "1", originalTerm) +
-            (isReductionStrategyRedex(this, originalTerm) ? "</span>" : "");
+            (Evaluator.isRedex.byStrategy(this, originalTerm) ? "</span>" : "");
     }
 
     desugar() {
@@ -340,9 +351,11 @@ class Let {
                    new App(OLCE.Data.aliases.getTerm("Y"),
                    new Abs(this.variable, this.term1)));
         }
-        if (this.rec) {
-            return new App(new Abs(this.variable, this.term2),
-                   new App(constant_fix, new Abs(this.variable, this.term1)));
+        if (this.rec && OLCE.Settings.discipline) {
+            return new Let(this.variable,
+                           new App(Constant.constant_fix,
+                                   new Abs(this.variable, this.term1, this.type)),
+                           this.term2, null, false);
         }
         return this.desugarOnly();
     }
@@ -356,7 +369,7 @@ class Let {
     }
 
     fromCode(code, returnRedex = false, redex = null, original = this) {
-        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        redex = Evaluator.isRedex.byStrategy(this, original) ? this : redex;
         if (code == "") {
             return returnRedex ? redex : this;  
         }
@@ -373,9 +386,11 @@ class Let {
     }
 
     /*desugar inverse function, useful for substitution*/
-    static toLet(redex, rec = false) {
-        return new Let(redex.term1.variable.copy(),
-                       redex.term2.copy(), redex.term1.term, [], rec);
+    static toLet(redex, type = null, rec = false) {
+        if (!rec) {
+            return new Let(redex.term1.variable.copy(),
+                       redex.term2.copy(), redex.term1.term, type, rec);
+        }
     }
 }
 
@@ -425,7 +440,7 @@ class Primitive {
     }
 
     fromCode(code, returnRedex = false, redex = null, original = this) {
-        redex = isReductionStrategyRedex(this, original) ? this : redex;
+        redex = Evaluator.isRedex.byStrategy(this, original) ? this : redex;
         if (code == "") {
             return returnRedex ? redex : this;
         }
@@ -455,8 +470,8 @@ const HtmlLiteral = {
     start: (depth) => "<span onmouseover='OLCE.UI.highlight(this)' " +
         "onmouseleave='OLCE.UI.highlight(this, false)' " +
         "onclick='OLCE.UI.clickReduce(\"" + depth + "\")'>",
-    type: (t, depth) => t.inputType != null ? "<span class='type'>:" +
-        t.inputType.write() + HtmlLiteral.end : "",
+    type: (t, depth) => t != null ? "<span class='type'>:" +
+        t.write() + HtmlLiteral.end : "",
     deltaRedexWrapper: (condition, text) => condition ?
         HtmlLiteral.deltaRedex + text + HtmlLiteral.end : text,
 };

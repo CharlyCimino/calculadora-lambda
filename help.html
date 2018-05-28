@@ -33,7 +33,7 @@
             <h2 id='general_information'>General information</h2>
             <p>
             <a class='intext' href='https://en.wikipedia.org/wiki/Lambda_calculus' target='_blank'>Lambda Calculus</a> is a formal system
-            for expressing computation, devised by Alonzo Church in the 1930s. This 
+            of logic, suitable for expressing computation, devised by Alonzo Church in the 1930s. This 
             client-side JavaScript-based application is an evaluator thereof.</p>
             <p>To evaluate some lambda calculus term, type it in the evaluator text box, and, if it is
             <a class='intext' href='#term_syntax'>syntactically correct</a>, submit it to the evaluator.
@@ -59,8 +59,50 @@
             dots, equality signs, lambda characters, whitespace characters, and 
             parentheses, adhering to one of the following grammars according to the selected
             <a href='#type_system' class='intext'>type system:</a></p>
+            
+            This grammar holds for the untyped lambda calculus terms, and also for Hindley-Milner type system:
+            <div class='smaller'>
+            <br>
+            TERM ::= (TERM TERM) | VARIABLE | ALIAS_CONSTANT | (λVARIABLE.TERM) | <em>Let</em> VAR = TERM <em>In</em> TERM | <em>LetRec</em> VAR = TERM <em>In</em> TERM
+            <br>
+            VARIABLE ::= LOWERCASE_LETTER | LOWERCASE_LETTER NUMERAL_STRING
+            <br>
+            ALIAS_CONSTANT ::= NUMERAL_STRING | UPPERCASE_LETTER_STRING
+            </div>
+            For the simply typed lambda calculus, type annotations have to be stated in the abstraction rule, and also in the recursive Let expression:
+            <div class='smaller'>
+            <br>
+            TYPE ::= (TYPE → TYPE) | Int | Bool
+            <br>
+            TERM ::= (TERM TERM) | VARIABLE | ALIAS_CONSTANT | (λVARIABLE:TYPE.TERM) | <em>Let</em> VAR = TERM <em>In</em> TERM | <em>LetRec</em> VAR : TYPE = TERM <em>In</em> TERM
+            <br>
+            VARIABLE ::= LOWERCASE_LETTER | LOWERCASE_LETTER NUMERAL_STRING
+            <br>
+            ALIAS_CONSTANT ::= NUMERAL_STRING | UPPERCASE_LETTER_STRING
+            </div>
+
 
             <h2 id='reductions'>Reductions</h2>
+            <p>
+            Besides desugaring the Let expressions, there are three reductions possible:
+            beta reduction, which replaces all the lambda-bound variables inside a function
+            with a argument, delta reduction, that reduces application of constants,
+            and eta reduction, removing the unneeded lambda abstractions.
+            </p>
+
+            <p>
+            Beta reductions are highlighted by blue outline for function,
+            red outline for an argument. Delta reductions are indicated
+            by a green outline, and Let expressions and eta reductions are indicated
+            by yellow outline.
+            </p>
+
+            <p>
+            There are some available reduction strategies that you can select from the head
+            navigation bar. When using a typed system, you can use only call by value strategy.
+            To select a reducible expression, click on it. The result will be appended
+            to the already existing derivation on the screen.
+            </p>
 
             <h2 id='aliases_primitives'>Aliases <em>&amp;</em> Constants</h2>
             <p>Altough similar in appearance, aliases and constants are somewhat different.
@@ -74,7 +116,11 @@
             for any other term. Constants can be functions or primitive values, such as numbers and
             boolean values, all of which are defined outside of the lambda calculus.
             </p>
-
+            <p>
+            To define your own alias, use the choose the <em>Add an alias</em> option from the Options menu,
+            write the name of the term to the left-hand side of the equality sign, and the term to the right-hand side.
+            You can also use the term on the last line right away.
+            </p>
 
 
 <style type="text/css">
@@ -244,7 +290,7 @@
   </tr>
   <tr>
     <td class="tg-c3ow" rowspan="2">FIX</td>
-    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2"><em>undefined</em></td>
     <td class="tg-c3ow" rowspan="2">1</td>
     <td class="tg-us36" rowspan="2">fixed point of the abstraction input</td>
   </tr>
@@ -253,7 +299,7 @@
   <tr>
     <td class="tg-c3ow" rowspan="2">Y</td>
     <td class="tg-us36" colspan="2">fixed point combinator</td>
-    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2"><em>undefined</em></td>
   </tr>
   <tr>
     <td class="tg-c3ow" colspan="2">λf.(λx.f (x x)) (λ x.f (x x))</td>
@@ -261,7 +307,7 @@
   <tr>
     <td class="tg-c3ow" rowspan="2">THETA</td>
     <td class="tg-us36" colspan="2">fixed point combinator, displayed as Θ</td>
-    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2"><em>undefined</em></td>
   </tr>
   <tr>
     <td class="tg-c3ow" colspan="2">(λxf.f (x x f)) (λxf.f (x x f))</td>
@@ -269,7 +315,7 @@
   <tr>
     <td class="tg-c3ow" rowspan="2">OMEGA</td>
     <td class="tg-us36" colspan="2">Omega combinator, displayed as Ω</td>
-    <td class="tg-c3ow" colspan="2" rowspan="2">undefined</td>
+    <td class="tg-c3ow" colspan="2" rowspan="2"><em>undefined</em></td>
   </tr>
   <tr>
     <td class="tg-c3ow" colspan="2">(λx.x x) (λ x.x x)</td>
@@ -305,9 +351,22 @@
 
             <h2 id='type_system'>Type system</h2>
             <ul>
-                <li><h4>None – Untyped lambda calculus</h4><p>This is bla ba</p></li>
-                <li><h4>Simply typed lambda calculus</h4><p>This is bla ba</p></li>
-                <li><h4>Hindley-Milner type system</h4><p>This is bla bThis is bla baa</p></li>
+                <li><h4>None – Untyped lambda calculus</h4><p>
+                The default "type system" is no type system at all. This enables reductions
+                of any terms, potentially resulting in inconsistencies, but it gives you
+                a freedom of self-application.
+                </p></li>
+                <li><h4>Simply typed lambda calculus</h4><p>
+                The simple simply typed lambda calculus is supplied with type annotations
+                marking the expected input to a function.
+                Because using the call by value, a type of a reducible function and its argument
+                can be determined without an outside context, and it will stop
+                evaluation of terms that do not match the expected argument and the supplied one.
+                </p></li>
+                <li><h4>Hindley-Milner type system</h4><p>
+                This type system does not need type annotations, and it can derive the types
+                of types without help. It is able to derive the most general, polymorphic type.
+                </p></li>
             </ul>
 
             <h2 id='import_export'>Import <em>&amp;</em> Export</h2>
@@ -334,6 +393,31 @@
             <h2 id='examples'>Examples</h2>
             <p>To evaluate particular expression, just click on it—a new window with evaluator set to a given
             expression will be open in your browser.</p>
+            <div class='examples'>
+            <a href='https://kdlcj.gitlab.io/lambda/#SIMPLY_TYPEDLetRec%20f:(Int%20%E2%86%92%20Int)%20=%20(%CE%BBx:Int.(((ITE%20((EQ%20x)%200))%201)%20((TIMES%20x)%20(f%20(PRED%20x)))))%20In%20(f%2012)'>LetRec f:Int → Int = λx:Int.ITE (EQ x 0) 1 (TIMES x (f (PRED x))) In f 12</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#UNTYPED(%CE%BBx.(f%20x))'>λx.f x</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#UNTYPED((%CE%BBn.(%CE%BBf.(%CE%BBx.(((n%20(%CE%BBg.(%CE%BBh.(h%20(g%20f)))))%20(%CE%BBu.x))%20(%CE%BBu.u)))))%20(%CE%BBf.(%CE%BBx.(f%20(f%20(f%20(f%20x)))))))'>(λnfx.n (λgh.h (g f)) (λu.x) (λu.u)) (λfx.f (f (f (f x))))</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#UNTYPED((%CE%BBx.(%CE%BBf.(f%20((x%20x)%20f))))%20(%CE%BBx.(%CE%BBf.(f%20((x%20x)%20f)))))'>Θ</a> (this can be input only as "THETA")
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#UNTYPED((PLUS%202)%202)'>PLUS 2 2</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#UNTYPED((%CE%BBx1.(%CE%BBw2.x1))%20(%CE%BBw.(w%20w2)))'>(λx1w2.x1) (λw.w w2)</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#UNTYPED((%CE%BBx.(x%20x))%20(%CE%BBx.(x%20x)))'>Ω</a> (this can be input only using "OMEGA")
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#UNTYPED(((((%CE%BBx1.(%CE%BBx2.(%CE%BBx3.(%CE%BBx4.((PLUS%20x2)%20x4)))))%20FALSE)%202)%20TRUE)%205)'>(λx1x2x3x4.PLUS x2 x4) FALSE 2 TRUE 5</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#SIMPLY_TYPED((%CE%BBx:(Int%20%E2%86%92%20Bool).x)%20(%CE%BBw:Int.((EQ%20w)%2012)))'>(λx:Int → Bool.x) (λw:Int.EQ w 12)</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#HINDLEY_MILNER((%CE%BBf.((f%202)%202))%20TIMES)'>(λf.f 2 2) TIMES</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#HINDLEY_MILNERLet%20f%20=%20234%20In%20((PLUS%20f)%20f)'>Let f = 234 In PLUS f f</a>
+            <br>
+            <a href='https://kdlcj.gitlab.io/lambda/#HINDLEY_MILNER((%CE%BBn.(%CE%BBf.(%CE%BBx.(f%20((n%20f)%20x)))))%20((%CE%BBn.(%CE%BBf.(%CE%BBx.(f%20((n%20f)%20x)))))%20(%CE%BBf.(%CE%BBx.(f%20(f%20(f%20(f%20x))))))))'>SUCC (SUCC 4)</a>
+            </div>
 
             <h2 id='about'>About</h2>
             <p>Created in <em>2018</em> by <span id='main'><sub>JavaScript needed for mail rendition</sub></span> as a practical part of bachelor 

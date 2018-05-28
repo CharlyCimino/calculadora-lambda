@@ -73,3 +73,13 @@ a:hover {
     font-size: 18pt;
     text-align: right;
 }
+
+.smaller {
+    font-size: 13pt;
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.examples {
+    font-size: 18pt; 
+}

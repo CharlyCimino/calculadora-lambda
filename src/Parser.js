@@ -1,31 +1,58 @@
 
-class Parser {
+Parser = {/*Parser object : String -> Term */
     constructor(word) {
         this.index = 0;
         this.word = word;
         this.errmsg = null;
-    }
+    },
 
+    /*moves index to the next non white character*/
     eatWhite() {
         while (!this.end() && this.word[this.index].match(/\s/)) {
             this.index++;
         }
-    }
+    },
 
+    /*returns remaining string*/
     remains() {
         return this.word.substr(this.index);
-    }
+    },
  
+    /*returns true iff there is no more string to parse*/
     end() {
         return this.index >= this.word.length;
-    }
+    },
+
+    /*sets new string for parsing*/
+    reset(str) {
+        this.index = 0;
+        this.word = str;
+        this.errmsg = null;
+    },
 
     error(t, i = this.index) {
         if (this.errmsg == null) {
             this.errmsg = { index:i, tokenName:t };
         }
-    }
+    },
     
+    /* returns parsed term object, null if not possible */
+    parse(str, preprocessor = true) {
+        if (preprocessor) {
+            str = Parser.preprocess(str);
+        }
+        if (str == null) {
+            return null;
+        }
+        Parser.reset(str);
+        var x = Parser.parseTermComplete();
+        if (x && Parser.remains() == "") {
+            return x;
+        }
+        return null;
+    },
+
+    /* parsing with backtracked trial */
     maybe(fn) {
         var previousError = this.errmsg;
         var previousIndex = this.index;
@@ -38,8 +65,9 @@ class Parser {
         this.errmsg = previousError;
         this.index = previousIndex;
         return null;
-    }
+    },
 
+    /*parse alias or constant*/
     parseAliasPrimitive() {
        if (this.errmsg != null) {
             return null;
@@ -78,29 +106,30 @@ class Parser {
                 this.index++;
             }
         } else {
-            this.error("alias");
             return null;
         }
-    
         var word = chars.join("");
-        var alias = word.match(/[0-9]{4,}/) ? null : OLCE.Data.aliases.getTerm(word);
+        var alias = word.match(/[0-9]{4,}/) ? null : OLCE.Data.aliases.getAliasByName(word);
+
+        alias = alias &&
+            OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED && alias.simpleTypedOnly ?
+            alias.term : 
+            OLCE.Settings.discipline != TypeDiscipline.SIMPLY_TYPED && alias && !alias.simpleTypedOnly ?
+            alias.term : null;
         var constant = OLCE.Data.constants.map(x => x.name).indexOf(word);
         constant = constant >= 0 ? OLCE.Data.constants[constant] : null;
-        constant = word.match(/-?[0-9]/) ? pri_n(word) : constant;
-        if (OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
-            alias = alias && alias.simpleTypedOnly ? alias : null;
-        }
+        constant = word.match(/-?[0-9]/) ? Constant.pri_n(word) : constant;
 
         if (!alias || !constant) {
             return alias ? alias : constant;
         }
-
 		if (other) {
             return OLCE.Settings.preferConstants ? alias : constant;
         }
         return OLCE.Settings.preferConstants ? constant : alias;
-    }
+    },
 
+    /*parse variable*/
     parseVar() {
         if (this.errmsg != null) {
             return null;
@@ -128,8 +157,9 @@ class Parser {
         }
 
         return this.errmsg == null ? new Var(letter + number) : null;
-    }
+    },
 
+    /* parse some character 'c' */
     parseCharacter(c) {
         if (this.errmsg != null) {
             return false;
@@ -145,12 +175,14 @@ class Parser {
         }
         this.error(c);
         return false;
-    }
+    },
 
+    /* parse type constructor arrow */
     parseArrow() {
         return this.parseCharacter("→");
-    }
+    },
 
+    /* parse abstraction */
     parseAbs() {
         if (this.errmsg != null) {
             return null;
@@ -160,45 +192,43 @@ class Parser {
             this.error("abstraction");
             return null;
         }
-       
         var type = null;
         var check = true;
         check = check && this.parseCharacter('\\(');
         check = check && this.parseCharacter('λ');
         var variable = this.parseVar();
-
+        var otherVariables = [];
+        var current;
+        while (OLCE.Settings.discipline != TypeDiscipline.SIMPLY_TYPED &&
+                (current = this.maybe('parseVar'))) {
+            otherVariables.push(current);
+        }
         if (OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
             check = check && this.parseCharacter(':');   
-            type = this.parseType();
+            type = this.parseTypeComplete();
             if (!type) {
                 return null;
             }
         }
-
         check = check && this.parseCharacter('\\.');
-        var term = this.parseTerm();
-        var otherTerms = [];
-        var oTerm;
-        while (oTerm = this.maybe('parseTerm')) {
-            otherTerms.push(oTerm); 
-        }
+        var term = this.parseTermComplete();
         check = check && this.parseCharacter('\\)');
 
         if (!term || !variable || !check) {
             return null;
         }
-        
         var result = term;
-        for (var i = 0; i < otherTerms.length; i++) {
-            result = new App(result, otherTerms[i]); 
+        for (var i = otherVariables.length - 1; i >= 0; i--) {
+            result = new Abs(otherVariables[i], result);   
         }
-        
         return new Abs(variable, result, type);
-    }
+    },
 
+    /*parse let expression*/
     parseLet() {
         var rec = false;
         var args = [];
+        var fType = null;
 
         if (this.errmsg != null) {
             return null;
@@ -216,10 +246,17 @@ class Parser {
             rec = true; 
             this.index += 3;
         }
-
         var variable = this.parseVar();
+        if (rec && OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
+            this.parseCharacter(':');
+            fType = this.parseTypeComplete();
+            if (fType == null) {
+                return null;
+            }
+        }
         var currentVar;
-        while (currentVar = this.maybe('parseVar')) {
+        while ((OLCE.Settings.discipline != TypeDiscipline.SIMPLY_TYPED) &&
+                (currentVar = this.maybe('parseVar'))) {
             args.push(currentVar);
         }
         if (!this.parseCharacter('=')) {
@@ -227,15 +264,20 @@ class Parser {
         }
         var t = null;
         var term1 = this.parseTerm(); 
-
         if (!term1) {
             return null;
         }
-
+        var others = [];
+        var current;
+        while (this.remains().match(/^\s*In/) == null && (current = this.maybe('parseTerm'))) {
+            others.push(current);  
+        }
+        for (var i = 0; i < others.length; i++) {
+            term1 = new App(term1, others[i]); 
+        }
         for (var i = args.length - 1; i >= 0; i--) {
             term1 = new Abs(args[i], term1.copy());    
         }
-
         this.eatWhite();
         if (this.word.substr(this.index, 2).match(/In/)) {
             this.index += 2;
@@ -251,11 +293,11 @@ class Parser {
         for (var i = 1; i < allTerms.length; i++) {
             result = new App(result, allTerms[i]);
         }
-
         return variable && term1 && term2 ?
-            new Let(variable, term1, result, [], rec) : null;
-    }
+            new Let(variable, term1, result, fType, rec) : null;
+    },
 
+    /* parse application, arbitrary (>=2) number of terms */
     parseApp() {
         if (this.errmsg != null) {
             return null;
@@ -265,32 +307,27 @@ class Parser {
             this.error("application");
             return null;
         }
-        
         var check = true;
         check = check && this.parseCharacter('\\(');
         var term1 = this.parseTerm();
         var term2 = this.parseTerm();
-
         var anotherTerms = [];
         var aTerm;
         while (aTerm = this.maybe('parseTerm')) {
             anotherTerms.push(aTerm); 
         }
-
         check = check && this.parseCharacter('\\)');
-
         if (!term1 || !term2 || !check) {
             return null;
         }
-
         var result = new App(term1, term2);
         for (var i = 0; i < anotherTerms.length; i++) {
             result = new App(result, anotherTerms[i]); 
         }
-        
         return result;
-    }
+    },
 
+    /* parse int or bool */
     parseBaseType() {
         if (this.errmsg != null) {
             return null;
@@ -305,8 +342,9 @@ class Parser {
         }
         this.error("missing type");
         return null;
-    }
+    },
 
+    /* parse function type, arbitrary (>=2) number */
     parseFunctionType() {
         if (this.errmsg != null) {
             return null;
@@ -331,181 +369,113 @@ class Parser {
             }
             result = new FunctionType(others[i], result); 
         }
-        
         return result;
-    }
+    },
 
+    /* parse any type and any number of */
+    parseTypeComplete() {
+        var others = [this.parseType()];
+        while (this.maybe('parseArrow')) {
+            others.push(this.maybe('parseType'));
+        }
+        var result = others[others.length - 1];
+        for (var i = others.length - 2; i >= 0; i--) {
+            if (others[i] == null) {
+                return null; 
+            } 
+            result = new FunctionType(others[i], result);
+        }
+        return result;
+    },
+
+    /*parse either function type of base type */
     parseType() {
         var type = null;
         type = this.maybe('parseBaseType');
         type = type ? type : this.maybe('parseFunctionType');
         return type;
-    }
+    },
 
+    /* parse one of either abs, let, app, or var */
     parseTerm() {
-        var term = null;
-        term = term == null ? this.maybe('parseApp') : term;
+        var term = this.maybe('parseApp');
         term = term == null ? this.maybe('parseLet') : term;
         term = term == null ? this.maybe('parseAliasPrimitive') : term;
         term = term == null ? this.maybe('parseVar') : term;
         term = term == null ? this.maybe('parseAbs') : term;
         this.eatWhite();
         return term;
-    }
-}
+    },
 
-function abstractionMultiple(string) { // \xyz.T -> \x.\y.\z.T
-    if (string == null || OLCE.Settings.discipline == TypeDiscipline.SIMPLY_TYPED) {
-        return string;
-    }
-    var result;
-    var resultString = "";
-    var stringToLambdas = (s) => {
-        var check = s.match(/(\s*[a-z][0-9]*)+/g);
-        var r;
-        var res = [];
-        if (check == null || check[0].trim() != s.trim()) {
+    /* parse arbitrary term */
+    parseTermComplete() {
+        var term  = this.parseTerm();
+        if (term == null) {
             return null;
         }
-        while (r = s.match(/^\s*[a-z][0-9]*/)) {
-            s = s.substr(r[0].length);
-            res.push(r[0].trim());
+        var current;
+        while (current = this.maybe('parseTerm')) {
+            term = new App(term, current); 
         }
-        return res.map(x => "λ" + x + ".").join("");
-    };
+        return term;
+    },
 
-    while (result = string.match(/^([^λ]*)λ(.*?)\.(.*)/)) {
-        resultString += result[1];
-        var s = stringToLambdas(result[2]);
-        if (s == null) {
+    /*adds necessary parens around abstraction*/
+    abstractionParenthesis(string) {
+        if (string == null) {
             return null;
         }
-        resultString += s;
-        string = result[3];
-    }
-    
-    return resultString + string;
-}
-
-function abstractionParenthesis(string) { // \x.\y.\z.T -> (\x.(\y.(\z.(T))))
-    if (string == null) {
-        return null;
-    }
-
-    var index = 0; 
-    var isParenBefore = false;
-    var findEnd = (i) => {
-        var parensStack = 0;
-        var afterDot = false;
-        while (i < string.length && parensStack >= 0) {
-            if (string[i] == '.') {
-                afterDot = true;
+        var index = 0; 
+        var isParenBefore = false;
+        var findEnd = (i) => {
+            var parensStack = 0;
+            var afterDot = false;
+            while (i < string.length && parensStack >= 0) {
+                if (string[i] == '.') {
+                    afterDot = true;
+                }
+                if (string[i] == ':') {
+                    afterDot = false;
+                }
+                if (afterDot) {
+                    if (string[i] == ')' || string.substr(i + 1, 2) == "In") {
+                        parensStack--;
+                    } 
+                    if (string[i] == '(' || string.substr(i + 1, 3) == "Let" ||
+                    string.substr(i + 1, 6) == "LetRec") {
+                        parensStack++;
+                    }
+                }
+                i++;
+            } 
+            return i;
+        }
+        var lambdaWithNoParens = (s) => {
+            if (s.match(/λ/g)) {
+                return s.match(/\(\s*λ/g) != null ? 
+                    s.match(/λ/g).length != s.match(/\(\s*λ/g).length :
+                    true;
             }
-            if (string[i] == ':') {
-                afterDot = false;
-            }
-
-            if (afterDot) {
-                if (string[i] == ')' || string.substr(i + 1, 2) == "In") {
-                    parensStack--;
-                } 
-                if (string[i] == '(' || string.substr(i + 1, 3) == "Let" ||
-                string.substr(i + 1, 6) == "LetRec") {
-                    parensStack++;
+            return false;
+        }
+        for (var i = 0; i < string.length; i++) {
+            if (string[i] == "λ") {
+                if (lambdaWithNoParens(string.substring(0, i + 1))) {
+                    var namespaceEnd = findEnd(i);
+                    string = string.substring(0, i) + "(" +
+                        string.substring(i, namespaceEnd) + ")" +
+                        string.substring(namespaceEnd, string.length);
                 }
             }
-            i++;
-        } 
-        return i;
-    }
-    var lambdaWithNoParens = (s) => {
-        if (s.match(/λ/g)) {
-            return s.match(/\(\s*λ/g) != null ? 
-                s.match(/λ/g).length != s.match(/\(\s*λ/g).length :
-                true;
         }
-        return false;
-    }
-    for (var i = 0; i < string.length; i++) {
-        if (string[i] == "λ") {
-            if (lambdaWithNoParens(string.substring(0, i + 1))) {
-                var namespaceEnd = findEnd(i);
-                string = string.substring(0, i) + "(" +
-                    string.substring(i, namespaceEnd) + ")" +
-                    string.substring(namespaceEnd, string.length);
-            }
-        }
-    }
-    return string;
-}
+        return string;
+    },
 
-function preprocess(string) {
-    string = string.replace(/\\/g, "λ")
-                   .replace(/->/g, "→")
-                   .replace(/,/g, " In Let ");
-    return abstractionParenthesis(
-           abstractionMultiple(
-           string));
-}
-
-function parse(str, preprocessor = true) {
-    if (preprocessor) {
-        str = preprocess(str);
-    }
-    if (str == null) {
-        return null;
-    }
-    var p = new Parser(str);
-    var x = p.parseTerm();
-    var other = [];
-    var o;
-    while (o = p.maybe('parseTerm')) {
-        other.push(o); 
-    }
-    var result = x;
-
-    for (var i = 0; i < other.length; i++) {
-        result = new App(result, other[i]);
-    }
-
-    if (x && p.remains() == "") {
-        return result;
-    }
-
-    return null;
-} 
-
-function slashToLambda(inputBox) {
-    var before = inputBox.selectionStart;
-    var withArrow = inputBox.value.replace(/->/g, "→");
-    if (withArrow != inputBox.value) {
-        inputBox.value = withArrow;
-        before--; 
-    }
-    inputBox.value = inputBox.value.replace(/\\/g, "λ")
-    inputBox.value = inputBox.value.replace(/\//g, "÷")
-    inputBox.value = inputBox.value.replace(/\*/g, "×")
-    inputBox.selectionStart = before;
-    inputBox.selectionEnd = before;
-
-    return parse(inputBox.value) != null;
-}
-
-function slashToLambdaWelcome(inputBox) {
-    if (slashToLambda(inputBox)) {
-        inputBox.style.outlineColor = "#8bbb8d";
-    } else {
-        inputBox.style.outlineColor = "#e08888";
-    }
-}
-
-function slashToLambdaAlias(inputBox) {
-    if (slashToLambda(inputBox)) {
-        inputBox.style.borderBottomColor = "#8bbb8d";
-        return true;
-    } else {
-        inputBox.style.borderBottomColor = "#e08888"; 
-    }
-    return false;
-}
+    preprocess(string) {
+        string = string.replace(/\\/g, "λ")
+                       .replace(/->/g, "→")
+                       .replace(/,/g, " In Let ");
+        return Parser.abstractionParenthesis(string);
+    },
+}//Parser
 
