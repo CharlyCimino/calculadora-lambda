@@ -1,4 +1,3 @@
-
 /*'enum' for evaluation strategy*/
 const EvaluationStrategy = {
     FULL_BETA       : 'Full beta reduction',
@@ -9,7 +8,7 @@ const EvaluationStrategy = {
 };
 
 /*evaluator singleton*/
-Evaluator = {
+let Evaluator = {
     /*returns true iff exp is a value*/
     isValue(exp) {
         return exp instanceof Abs ||
@@ -332,7 +331,7 @@ Evaluator = {
         },
 
         eta(exp, original = exp) {
-            check = exp instanceof Abs &&
+            var check = exp instanceof Abs &&
                 exp.term instanceof App &&
                 exp.variable.equals(exp.term.term2) &&
                 Evaluator.getRedex.allBeta(original).length == 0 &&
