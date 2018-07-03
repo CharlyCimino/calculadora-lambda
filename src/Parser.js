@@ -1,5 +1,5 @@
 
-Parser = {/*Parser object : String -> Term */
+let Parser = {/*Parser object : String -> Term */
     constructor(word) {
         this.index = 0;
         this.word = word;
