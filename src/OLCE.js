@@ -1,5 +1,4 @@
-
-OLCE = { /*Online  Lambda  Calculus  Evaluator*/
+let OLCE = { /*Online  Lambda  Calculus  Evaluator*/
     /*global application settings*/
     Settings : {
         strategy          : EvaluationStrategy.FULL_BETA,
