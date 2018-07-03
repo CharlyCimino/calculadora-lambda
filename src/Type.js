@@ -1,4 +1,3 @@
-
 const TypeDiscipline = {
     UNTYPED        : 'Untyped',
     SIMPLY_TYPED   : 'Simply typed',
@@ -10,7 +9,7 @@ const TypeDiscipline = {
         case TypeDiscipline.HINDLEY_MILNER: return 'HINDLEY_MILNER'; }},
 };
 
-Type = {
+let Type = {
     /* return simple type for a term */
     getSimple(term, env = new TypeEnvironment()) {
         var rec = (t) => Type.getSimple(t, env);
