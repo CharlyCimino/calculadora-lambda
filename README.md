@@ -1,7 +1,9 @@
-# Lambda Calculus Evaluator
-
+# `Lambda Calculus Evaluator`
 # available at https://kdlcj.gitlab.io/lambda/
 
+## This is a web application for evaluation of λ-calculus expressions.
+
+### Features:
 - reduction strategies: call by name, normal order, applicative order, call by value
 - type systems: untyped, simply typed lambda calculus, Hindley-Milner typesystem
 - import/export: file saving, loading, URL encoded terms, LaTeX export, custom print stylesheet
