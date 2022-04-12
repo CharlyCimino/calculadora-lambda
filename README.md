@@ -10,8 +10,12 @@
 - conversion to SKI combinatory calculus
 - full syntactical form/shorthand form term-displaying
 
-## Créditos al repo original: 
-Autor: kdlcj
+## Créditos al repo original 
+Autor: @kdlcj
+
 Repo: https://gitlab.com/kdlcj/lambda
+
 Online: https://kdlcj.gitlab.io/lambda/
+
 Ayuda: https://kdlcj.gitlab.io/lambda/help.html
+
