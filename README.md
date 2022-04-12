@@ -1,9 +1,7 @@
-# `Lambda Calculus Evaluator`
-# available at https://kdlcj.gitlab.io/lambda/
+# Calculadora de expresiones lambda
+## Disponible online en https://charlycimino.github.io/calculadora-lambda/
 
-## This is a web application for evaluation of λ-calculus expressions.
-
-### Features:
+## Features
 - reduction strategies: call by name, normal order, applicative order, call by value
 - type systems: untyped, simply typed lambda calculus, Hindley-Milner typesystem
 - import/export: file saving, loading, URL encoded terms, LaTeX export, custom print stylesheet
@@ -12,4 +10,8 @@
 - conversion to SKI combinatory calculus
 - full syntactical form/shorthand form term-displaying
 
-help page available at https://kdlcj.gitlab.io/lambda/help.html
+## Créditos al repo original: 
+Autor: kdlcj
+Repo: https://gitlab.com/kdlcj/lambda
+Online: https://kdlcj.gitlab.io/lambda/
+Ayuda: https://kdlcj.gitlab.io/lambda/help.html
